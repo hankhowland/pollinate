@@ -1,0 +1,51 @@
+<%- include('partials/topnav_signedout') %>
+
+<style>
+    #sign-in {
+        outline: 4px solid  #15335e;
+        padding: 10px 10px;
+        background-color: #f2f4f7;
+    }
+
+</style>
+
+<div class="container">
+    <div class="row" style="height:200px;"></div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6" id="sign-in">
+            <h3 style="color:#15335e;">Sign Up</h3>
+            <form action="/routes/signup" method="post">
+                <div id="signupInfo" style="color:red; visibility:hidden;"></div>
+                <div class="form-group">
+                  <input type="email" name="email" class="form-control" placeholder="Email">
+                </div>
+                <div class="form-group">
+                  <input type="password" class="form-control" name="password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm Password">
+                </div>
+                <button type="submit" class="btn" style="background: #15335e; color: white;">Sign Up</button>
+                <div style="margin-top:5px;"><p>Already have an account? <a href="/routes/"">Sign In</a></p></div>
+              </form>
+        </div>
+        <div class="col-3"></div>
+    </div>
+    <div class="row"></div>
+</div>
+
+<script>
+    if (window.location.href.indexOf("passwordShort") > -1) {
+        document.querySelector('#signupInfo').style.visibility = 'visible';
+        document.querySelector('#signupInfo').innerHTML = 'Your password must be at least 8 characters long.';
+    }
+    else if (window.location.href.indexOf("passwordsMatch") > -1) {
+        document.querySelector('#signupInfo').style.visibility = 'visible';
+        document.querySelector('#signupInfo').innerHTML = 'Your password and password confirmation did not match.';
+    }
+    else if (window.location.href.indexOf("userExists") > -1) {
+        document.querySelector('#signupInfo').style.visibility = 'visible';
+        document.querySelector('#signupInfo').innerHTML = 'There is already an account associated with that email.';
+    }
+</script>
