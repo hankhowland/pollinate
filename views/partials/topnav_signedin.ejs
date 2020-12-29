@@ -9,10 +9,27 @@
     #logo {
         padding-right:10px;
     }
+    a:hover {
+        color:black;
+        text-decoration:none;
+
+    }
+    a {
+        color:white;  
+    }
 </style>
 
 <div id="topnav" class="row">
     <div class="col-2"><h3><i id="logo" class="fab fa-forumbee"></i>Pollinate</h3></div>
-    <div class="col-2"><h5 style="margin-top:8px;">Study</h5></div>
-    <div class="col-2"><h5 style="margin-top:8px;">Motivate</h5></div>
+    <div class="col-2"><a href="/routes/study"><h5 id="studyLink" style="margin-top:8px;">Study</h5></a></div>
+    <div class="col-2"><a href="/routes/motivate"><h5 id="motivateLink" style="margin-top:8px;">Motivate</h5></a></div>
 </div>
+
+<script>
+    if (window.location.href.indexOf("study") > -1) {
+        document.querySelector("#studyLink").style.color = 'black';
+    }
+    else if (window.location.href.indexOf("motivate") > -1) {
+        document.querySelector("#motivateLink").style.color = 'black';
+    }
+</script>

@@ -71,21 +71,23 @@ function dateToString(date) {
             date: cannot change
         cancel                      submit
     -->
-    <h5 id="PUtitle">Create Study Session on 12/28</h5>
+    <h5 id="PUtitle"></h5>
     <hr>
-    <form>
+    <form method="post" action="/routes/addStudyTime">
         <div class="form-group row">
             <label for="startTime" class="col-5 col-form-label">Start Time</label>
             <div class="col-7">
-                <input class="form-control" type="time" value="13:45:00" id="startTime">
+                <input class="form-control" name="startTime" type="time" id="startTime">
             </div>
         </div>
         <div class="form-group row">
             <label for="endTime" class="col-5 col-form-label">End Time</label>
             <div class="col-7">
-                <input class="form-control" type="time" value="13:45:00" id="endTime">
+                <input class="form-control" name="endTime" type="time" id="endTime">
             </div>
         </div>
+        <input type="hidden" name="email" value="<%= user %>">
+        <input type="hidden" id="PUdate" name="date">
         <button type="submit" class="btn" style="background: #15335e; color: white;">Submit</button>
         <button onclick="closePU()" class="btn float-right" style="background: red; color: white;">Cancel</button>
     </form>
@@ -94,12 +96,33 @@ function dateToString(date) {
 
 <script>
     function makeSession(cell) {
-        console.log('makeSession() called on');
-        console.log(cell);
+        var cellArr = cell.id.split(':');
+        var dateArr = cellArr[0].split('/');
+        var monthStr = parseInt(dateArr[0]) + 1;
+        var am_or_pm = cellArr[1].slice(cellArr[1].length-2, cellArr[1].length);
+        var hour = cellArr[1].split(' ')[0];
+        if (am_or_pm == "AM") {var endTime = hourFormat(hour) + ":00:00"; var startTime = hourFormat(parseInt(hour)-1) + ":00:00";}
+        else {
+            if (cellArr[1].slice(0,2) == "12") {var endTime = "12:00:00"; var startTime = "11:00:00";}
+            else {var endTime = (hourFormat(parseInt(hour)+12)) + ":00:00"; var startTime = hourFormat(parseInt(hour)+11) + ":00:00";}
+        }
+        document.getElementById("startTime").value = startTime;
+        document.getElementById("endTime").value = endTime;
+        document.getElementById("PUtitle").innerHTML = "Create Study Session on " + monthStr + "/" + dateArr[1];
         document.getElementById("popUpEventCreator").style.display = "block";
+        document.getElementById("PUdate").value = cellArr[0];
     };
     function closePU() {
         document.getElementById("popUpEventCreator").style.display = "none";
+    }
+    function hourFormat(hour) {
+        hour = hour.toString();
+        if (hour.length == 1) {
+            return "0" + hour.toString();
+        }
+        else {
+            return hour.toString();
+        }
     }
 </script>
 

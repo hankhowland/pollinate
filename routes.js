@@ -24,9 +24,35 @@ router.get('/study', async function(req, res, next){
         new_day.setDate(today.getDate() + i)
         week_array.push(new_day)
     }
-
-    res.render('study', {daysArray: week_array});
+    res.render('study', {daysArray: week_array, user: req.query.user});
 });
+
+//serve motivate page
+router.get('/motivate', async function(req, res, next){
+    res.render('motivate');
+});
+
+//add Study Session
+router.route('/addStudyTime')
+    .post(function(req, res, next) {
+        const db = req.app.locals.db;
+        var dateArr = req.body.date.split('/');
+        var startTimeStr = req.body.startTime.replaceAll(':', '');
+        var endTimeStr = req.body.endTime.replaceAll(':', '');
+        var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
+        var doc = {
+            email: req.body.email,
+            date: parseInt(dateString),
+            startTime: parseInt(startTimeStr),
+            endTime: parseInt(endTimeStr)
+        };
+        console.log(doc);
+        db.collection('studyTimes').insertOne(doc, function(err, result) {
+            assert.equal(null, err);
+            console.log('doc inserted');
+        });
+        res.redirect('/routes/study?user=' + req.body.email);     
+    });
 
 //sign up logic
 router.route('/signup')
@@ -89,3 +115,14 @@ router.route('/sign_in')
 });
 
 module.exports = router;
+
+
+function zeroFormat(hour) {
+    hour = hour.toString();
+    if (hour.length == 1) {
+        return "0" + hour.toString();
+    }
+    else {
+        return hour.toString();
+    }
+}
