@@ -14,7 +14,18 @@ router.get('/signup_page', async function(req, res, next){
 
 //serve study page
 router.get('/study', async function(req, res, next){
-    res.render('study');
+    //req.query has user
+    //making array of today and the next 6 days
+    var today = new Date();
+    var week_array = [];
+    week_array.push(today);
+    for(var i=1; i<7; i++) {
+        const new_day = new Date();
+        new_day.setDate(today.getDate() + i)
+        week_array.push(new_day)
+    }
+
+    res.render('study', {daysArray: week_array});
 });
 
 //sign up logic
@@ -69,7 +80,7 @@ router.route('/sign_in')
         }
         else { //all good, create account
             if (req.body.password == dbPassword) {
-                res.redirect('/routes/study');
+                res.redirect('/routes/study?user=' + req.body.email);
             }
             else {
                 res.redirect('/routes/?passwordIncorrect=True'); 

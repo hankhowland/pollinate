@@ -1,2 +1,107 @@
 <%- include('partials/topnav_signedin') %>
-<div>Study Page</div>
+<%- include('partials/styles/studyStyles') %>
+<!---
+    display current week only--starting with the current day
+    6am - 2am for each day, drag and drop events to add them
+
+    Drag and drop:
+    https://developer.mozilla.org/en-US/docs/Web/API/DragEvent
+
+    Data we need to send:
+    today and the next 6 days as dates in an array
+
+
+-->
+<% 
+function dateToString(date) {
+        return date.getMonth()+'/'+date.getDate()+'/'+date.getFullYear()+':';
+    }
+ %> 
+<% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %>
+<% var times = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"]; %>
+<div class="row" style="height:100%;">
+    <div class="col-md-9" style="text-align:center; color:#15335e;">
+        <h4 style="margin-top:10px;">Desired Study Sessions</h4>
+        <p style="color: #a4a4a4; ">click a time period to add a study session</p>
+        <div style="padding:30px; overflow-y:scroll; height:600px;">
+            <table id="calendarTable">
+                <tr>
+                    <td></td>
+                    <% daysArray.forEach((day) => { %>
+                        <td class="dateLabel"><%= dayNames[day.getDay()] %> <%= day.getMonth()+1 %>/<%= day.getDate() %></td>
+                    <% }); %>
+                </tr>
+                <tr>
+                    <td class="timeLabel" style="padding-top:0px;">5 AM</td>
+                    <td class="firstCell"></td>
+                    <td class="firstCell"></td>
+                    <td class="firstCell"></td>
+                    <td class="firstCell"></td>
+                    <td class="firstCell"></td>
+                    <td class="firstCell"></td>
+                    <td class="firstCell"></td>
+                </tr>
+                <% times.forEach((time) => { %>
+                    <tr>
+                        <td class="timeLabel"><%= time %></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[0]) + time %>"></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[1]) + time %>" ></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[2]) + time %>" ></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[3]) + time %>" ></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[4]) + time %>" ></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[5]) + time %>" ></td>
+                        <td class="calendarCell" onClick="makeSession(this)" id="<%= dateToString(daysArray[6]) + time %>" ></td>
+                    </tr>
+                <% }); %>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-3 no-float" style="border-left: 5px solid #eaeaea; color:#15335e; text-align:center;">
+        <h4 style="margin-top:10px;">My Events</h4>
+    </div>
+</div>
+
+
+<div id="popUpEventCreator">
+    <!---
+        fields:
+            start time: default is in id,
+            end time: 1 hour later,
+            date: cannot change
+        cancel                      submit
+    -->
+    <h5 id="PUtitle">Create Study Session on 12/28</h5>
+    <hr>
+    <form>
+        <div class="form-group row">
+            <label for="startTime" class="col-5 col-form-label">Start Time</label>
+            <div class="col-7">
+                <input class="form-control" type="time" value="13:45:00" id="startTime">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="endTime" class="col-5 col-form-label">End Time</label>
+            <div class="col-7">
+                <input class="form-control" type="time" value="13:45:00" id="endTime">
+            </div>
+        </div>
+        <button type="submit" class="btn" style="background: #15335e; color: white;">Submit</button>
+        <button onclick="closePU()" class="btn float-right" style="background: red; color: white;">Cancel</button>
+    </form>
+
+</div>
+
+<script>
+    function makeSession(cell) {
+        console.log('makeSession() called on');
+        console.log(cell);
+        document.getElementById("popUpEventCreator").style.display = "block";
+    };
+    function closePU() {
+        document.getElementById("popUpEventCreator").style.display = "none";
+    }
+</script>
+
+
+
