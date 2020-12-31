@@ -18,17 +18,19 @@
         font-size: 10px;
         text-align: bottom;
         color: #a4a4a4;
-        padding-top:20px;
+        padding-top:10px;
     }
     .calendarCell {
         border: 1px solid #a4a4a4;
-
+    }
+    .calendarCell:hover {
+        background-color: #f2f4f7;
     }
     .firstCell {
         border: 1px solid #a4a4a4;
         border-top: none;
     }
-    #popUpEventCreator {
+    .popUp {
         display: none;
         position: fixed;
         bottom: 40%;
@@ -37,5 +39,15 @@
         z-index: 9;
         background-color: #f2f4f7;
         padding:10px;
+    }
+
+    .calSession {
+        position: fixed;
+        background-color: #8aafeb;
+        z-index: 8;
+        border-radius: 2px;
+    }
+    .calSession:hover {
+        background-color: #15335e;
     }
 </style>

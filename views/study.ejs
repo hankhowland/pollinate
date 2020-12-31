@@ -22,8 +22,7 @@ function dateToString(date) {
 <div class="row" style="height:100%;">
     <div class="col-md-9" style="text-align:center; color:#15335e;">
         <h4 style="margin-top:10px;">Desired Study Sessions</h4>
-        <p style="color: #a4a4a4; ">click a time period to add a study session</p>
-        <div style="padding:30px; overflow-y:scroll; height:600px;">
+        <div style="padding:30px;">
             <table id="calendarTable">
                 <tr>
                     <td></td>
@@ -32,7 +31,7 @@ function dateToString(date) {
                     <% }); %>
                 </tr>
                 <tr>
-                    <td class="timeLabel" style="padding-top:0px;">5 AM</td>
+                    <td id="topOfCalendar" class="timeLabel" style="padding-top:0px;">5 AM</td>
                     <td class="firstCell"></td>
                     <td class="firstCell"></td>
                     <td class="firstCell"></td>
@@ -63,7 +62,7 @@ function dateToString(date) {
 </div>
 
 
-<div id="popUpEventCreator">
+<div class="popUp" id="popUpEventCreator">
     <!---
         fields:
             start time: default is in id,
@@ -89,12 +88,37 @@ function dateToString(date) {
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="PUdate" name="date">
         <button type="submit" class="btn" style="background: #15335e; color: white;">Submit</button>
-        <button onclick="closePU()" class="btn float-right" style="background: red; color: white;">Cancel</button>
+        <button onclick="closePU('popUpEventCreator')" type="button" class="btn float-right" style="background: red; color: white;">Cancel</button>
     </form>
+</div>
 
+
+<div class="popUp" id="popUpEventEditor">
+    <h5 style="margin-right: 30px;" id="editTitle"></h5>
+    <hr>
+    <form method="post" action="/routes/editStudyTime">
+        <div class="form-group row">
+            <label for="startTime" class="col-5 col-form-label">Start Time</label>
+            <div class="col-7">
+                <input class="form-control" name="startTime" type="time" id="edit_startTime">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="endTime" class="col-5 col-form-label">End Time</label>
+            <div class="col-7">
+                <input class="form-control" name="endTime" type="time" id="edit_endTime">
+            </div>
+        </div>
+        <input type="hidden" name="email" value="<%= user %>">
+        <input type="hidden" id="edit_date" name="date">
+        <input type="hidden" id="edit_id" name="id">
+        <button type="submit" class="btn" style="background: #15335e; color: white;">Edit</button>
+        <button onClick="closePU('popUpEventEditor')" type="button" class="btn float-right" style="background: red; color: white;">Cancel</button>
+    </form>
 </div>
 
 <script>
+    //create session pop up onclick function
     function makeSession(cell) {
         var cellArr = cell.id.split(':');
         var dateArr = cellArr[0].split('/');
@@ -112,9 +136,11 @@ function dateToString(date) {
         document.getElementById("popUpEventCreator").style.display = "block";
         document.getElementById("PUdate").value = cellArr[0];
     };
-    function closePU() {
-        document.getElementById("popUpEventCreator").style.display = "none";
+    //closes create session pop up
+    function closePU(id) {
+        document.getElementById(id).style.display = "none";
     }
+    //removes leading zero from an hour
     function hourFormat(hour) {
         hour = hour.toString();
         if (hour.length == 1) {
@@ -124,6 +150,81 @@ function dateToString(date) {
             return hour.toString();
         }
     }
+    
+    //onclick of editSession popup
+    function editSession(sessionEL) {
+        document.getElementById("popUpEventEditor").style.display = "block";
+        sessionID = sessionEL.id;
+        var session;
+        sessions.forEach((sesh) => {
+            if (sesh._id == sessionID) {
+                session = sesh;
+            }
+        });
+        var month = parseInt(session.date.split('/')[0])+1;
+        var day = parseInt(session.date.split('/')[1]);
+        console.log(session);
+        document.getElementById("editTitle").innerHTML = 'Edit Study Session on ' + month + '/' + day;
+        document.getElementById("edit_startTime").value = session.startTime;
+        document.getElementById("edit_endTime").value = session.endTime;
+        document.getElementById("edit_date").value = session.date;
+        document.getElementById("edit_id").value = session._id;
+
+    };
+
+
+    //makeing calendar session boxes --------------------------------------------------------------
+    //calendar constants
+    var positioning = document.getElementById('topOfCalendar').getBoundingClientRect();
+    var topCal = positioning.bottom;
+    var columnLeft = positioning.left;
+    var columnWidth = positioning.width+1;
+    var cellHeight = 24;
+    var heightOfCal = cellHeight*18;
+
+    //session data
+    var sessions = <%- JSON.stringify(sessionsArr) %>;
+    sessions.forEach((session) => {
+        document.body.innerHTML += `<div onClick="editSession(this)" class="calSession" id="${session._id}"></div>`
+        var sessionEL = document.getElementById(session._id);
+        sessionEL.style.width = columnWidth;
+        sessionEL.style.top = getTop(session.startTime);
+        sessionEL.style.height = getHeight(session.startTime, session.endTime);
+        sessionEL.style.left = getLeft(session.date);
+    });
+    
+
+
+    //session positioning helpers
+    //takes in session.startTime and returns the appropriate style.top for the session element
+    function getTop(startTime) {
+        var startHour = parseInt(startTime.split(':')[0]);
+        var startMins = parseInt(startTime.split(':')[1]);
+        var startTotalMins = startHour*60 + startMins;
+        var startMinsSince5 = startTotalMins - 5*60;
+        var startY = (startMinsSince5/60) * cellHeight;
+        return (topCal + startY).toString() + 'px'
+    }
+
+    //takes in session.startTime, session.endTime and returns the appropriate style.height for the session element
+    function getHeight(startTime, endTime) {
+        var startHour = parseInt(startTime.split(':')[0]);
+        var startMins = parseInt(startTime.split(':')[1]);
+        var endHour = parseInt(endTime.split(':')[0]);
+        var endMins = parseInt(endTime.split(':')[1]);
+        var sessionLength = (endHour*60 + endMins) - (startHour*60 + startMins);
+        return (sessionLength/60 * cellHeight).toString() + 'px';
+    }
+
+    //takes in session.date and returns the appropriate style.left for the session element
+    function getLeft(date) {
+        var colPositioning = document.querySelector(`[id^="${date}"]`).getBoundingClientRect();
+        return (colPositioning.left).toString() + 'px';
+    }
+    
+    
+
+
 </script>
 
 
