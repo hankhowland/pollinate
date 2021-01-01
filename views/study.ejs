@@ -3,14 +3,6 @@
 <!---
     display current week only--starting with the current day
     6am - 2am for each day, drag and drop events to add them
-
-    Drag and drop:
-    https://developer.mozilla.org/en-US/docs/Web/API/DragEvent
-
-    Data we need to send:
-    today and the next 6 days as dates in an array
-
-
 -->
 <% 
 function dateToString(date) {
@@ -87,8 +79,8 @@ function dateToString(date) {
         </div>
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="PUdate" name="date">
-        <button type="submit" class="btn" style="background: #15335e; color: white;">Submit</button>
-        <button onclick="closePU('popUpEventCreator')" type="button" class="btn float-right" style="background: red; color: white;">Cancel</button>
+        <button type="submit" class="btn modalButton" style="background: #15335e; color: white;">Submit</button>
+        <button onclick="closePU('popUpEventCreator')" type="button" class="btn float-right modalButton" style="background: red; color: white;">Cancel</button>
     </form>
 </div>
 
@@ -112,8 +104,8 @@ function dateToString(date) {
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="edit_date" name="date">
         <input type="hidden" id="edit_id" name="id">
-        <button type="submit" class="btn" style="background: #15335e; color: white;">Edit</button>
-        <button onClick="closePU('popUpEventEditor')" type="button" class="btn float-right" style="background: red; color: white;">Cancel</button>
+        <button type="submit" class="btn modalButton" style="background: #15335e; color: white;">Edit</button>
+        <button onClick="closePU('popUpEventEditor')" type="button" class="btn float-right" id="closeEdit">Close</button>
     </form>
 </div>
 
@@ -136,10 +128,11 @@ function dateToString(date) {
         document.getElementById("popUpEventCreator").style.display = "block";
         document.getElementById("PUdate").value = cellArr[0];
     };
-    //closes create session pop up
+    //closes pop up with id
     function closePU(id) {
         document.getElementById(id).style.display = "none";
     }
+
     //removes leading zero from an hour
     function hourFormat(hour) {
         hour = hour.toString();
@@ -193,8 +186,6 @@ function dateToString(date) {
         sessionEL.style.left = getLeft(session.date);
     });
     
-
-
     //session positioning helpers
     //takes in session.startTime and returns the appropriate style.top for the session element
     function getTop(startTime) {
@@ -221,9 +212,6 @@ function dateToString(date) {
         var colPositioning = document.querySelector(`[id^="${date}"]`).getBoundingClientRect();
         return (colPositioning.left).toString() + 'px';
     }
-    
-    
-
 
 </script>
 
