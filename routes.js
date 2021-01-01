@@ -30,10 +30,18 @@ router.get('/study', async function(req, res, next){
             new_day.setDate(today.getDate() + i)
             week_array.push(new_day)
         }
+        var mongoToday = today.getFullYear().toString()+zeroFormat(today.getMonth())+zeroFormat(today.getDate());
+
         //get users study sessions
         const db = req.app.locals.db;
-        var sessionsCursor = db.collection('studyTimes').find({"email" : {$eq: req.query.user}});
+        var sessionsCursor = db.collection('studyTimes').find(
+            {$and: [
+                {"date": {$gte: parseInt(mongoToday)}},
+                {"email": {$eq: req.query.user}}
+            ]}   
+        );
         var sessionsArray = [];
+
         await sessionsCursor.forEach((doc) => {
             doc.date = parseInt(doc.date.toString().slice(4,6)) + '/' + parseInt(doc.date.toString().slice(6,8)) + '/' + doc.date.toString().slice(0,4);
             doc.startTime = doc.startTime.toString().slice(0,5);
@@ -160,6 +168,8 @@ router.route('/sign_in')
 module.exports = router;
 
 
+
+///////////////////utility Functions//////////////////////
 function zeroFormat(hour) {
     hour = hour.toString();
     if (hour.length == 1) {
