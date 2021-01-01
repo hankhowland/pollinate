@@ -85,9 +85,13 @@ function dateToString(date) {
 </div>
 
 
-<div class="popUp" id="popUpEventEditor">
-    <h5 style="margin-right: 30px;" id="editTitle"></h5>
-    <hr>
+<div class="popUp" style="width: 400px;" id="popUpEventEditor">
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="col-10"><h5 id="editTitle"></h5></div>
+        <div class="col-2" style="font-size:20px; padding-top:3px;">
+            <a id="deleteRoute" href=''><i class="fa fa-trash-o modalButton" style="color:#a4a4a4;" aria-hidden="true"></i></a>
+        </div>
+    </div>
     <form method="post" action="/routes/editStudyTime">
         <div class="form-group row">
             <label for="startTime" class="col-5 col-form-label">Start Time</label>
@@ -162,7 +166,7 @@ function dateToString(date) {
         document.getElementById("edit_endTime").value = session.endTime;
         document.getElementById("edit_date").value = session.date;
         document.getElementById("edit_id").value = session._id;
-
+        document.getElementById("deleteRoute").href = `/routes/deleteSession?id=${session._id}&email=${session.email}`
     };
 
 

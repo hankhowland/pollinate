@@ -73,17 +73,29 @@ router.route('/addStudyTime')
 
 //edit Study Session
 router.route('/editStudyTime')
-    .post(function(req, res, next) {
+    .post(async function(req, res, next) {
         const db = req.app.locals.db;
         var dateArr = req.body.date.split('/');
         var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
         var newvalues = {$set: {email: req.body.email, date: parseInt(dateString), startTime: req.body.startTime, endTime: req.body.endTime}};
-        db.collection('studyTimes').updateOne({"_id": ObjectId(req.body.id)}, newvalues, function(err, result) {
+        await db.collection('studyTimes').updateOne({"_id": ObjectId(req.body.id)}, newvalues, function(err, result) {
             assert.equal(null, err);
             console.log('doc edited');
         });
         res.redirect('/routes/study?user=' + req.body.email);     
     });
+
+//delete Study Session
+//add Study Session
+router.get('/deleteSession', async function(req, res, next) {
+    const db = req.app.locals.db;
+    await db.collection('studyTimes').deleteOne({"_id": ObjectId(req.query.id)}, function(err, result) {
+        assert.equal(null, err);
+        console.log('doc deleted');
+    });
+    res.redirect('/routes/study?user=' + req.query.email);     
+});
+
 
 //sign up logic
 router.route('/signup')
