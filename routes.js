@@ -3,6 +3,11 @@ const router = express.Router();
 const assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 
+//GLOBAL UTILITY VARS
+var today = new Date();
+var mongoToday = today.getFullYear().toString()+zeroFormat(today.getMonth())+zeroFormat(today.getDate());
+var cost_per_hour = 6;
+
 //serve sign in page
 router.get('/', async function(req, res, next){
     res.render('sign_in');
@@ -21,17 +26,7 @@ router.get('/study', async function(req, res, next){
     }
     else {
         //req.query has user
-        //making array of today and the next 6 days
-        var today = new Date();
-        var week_array = [];
-        week_array.push(today);
-        for(var i=1; i<7; i++) {
-            const new_day = new Date();
-            new_day.setDate(today.getDate() + i)
-            week_array.push(new_day)
-        }
-        var mongoToday = today.getFullYear().toString()+zeroFormat(today.getMonth())+zeroFormat(today.getDate());
-
+        var week_array = makeWeekArray();
         //get users study sessions
         const db = req.app.locals.db;
         var sessionsCursor = db.collection('studyTimes').find(
@@ -55,14 +50,35 @@ router.get('/study', async function(req, res, next){
 
 //serve motivate page
 router.get('/motivate', async function(req, res, next){
-    res.render('motivate');
+    var week_array = makeWeekArray();
+    //get all sessions where user != current user, date >= today, and motivator != 0
+    const db = req.app.locals.db;
+    var sessionsCursor = db.collection('studyTimes').find(
+        {$and: [
+            {"date": {$gte: parseInt(mongoToday)}},
+            {"email": {$ne: req.query.user}},
+            {"motivator": {$ne: 1}}
+        ]}   
+    );
+    var sessionsArray = [];
+    await sessionsCursor.forEach((doc) => {
+        doc.date = parseInt(doc.date.toString().slice(4,6)) + '/' + parseInt(doc.date.toString().slice(6,8)) + '/' + doc.date.toString().slice(0,4);
+        doc.startTime = doc.startTime.toString().slice(0,5);
+        doc.endTime = doc.endTime.toString().slice(0,5);
+        //finding cost of session
+        var length = (parseInt(doc.endTime.split(':')[0])*60 + parseInt(doc.endTime.split(':')[1])) - (parseInt(doc.startTime.split(':')[0])*60 + parseInt(doc.startTime.split(':')[1])) 
+        doc.cost = Math.ceil((length/60)*cost_per_hour);
+        if (doc.cost < cost_per_hour) {doc.cost = cost_per_hour;}
+
+        sessionsArray.push(doc);
+    });
+    res.render('motivate', {sessions: sessionsArray, daysArray: week_array});
 });
 
 //add Study Session
 router.route('/addStudyTime')
     .post(function(req, res, next) {
         const db = req.app.locals.db;
-        console.log(req.body.startTime);
         var dateArr = req.body.date.split('/');
         var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
         var doc = {
@@ -71,7 +87,6 @@ router.route('/addStudyTime')
             startTime: req.body.startTime,
             endTime: req.body.endTime
         };
-        console.log(doc);
         db.collection('studyTimes').insertOne(doc, function(err, result) {
             assert.equal(null, err);
             console.log('doc inserted');
@@ -178,4 +193,15 @@ function zeroFormat(hour) {
     else {
         return hour.toString();
     }
+}
+
+function makeWeekArray() {
+    var week_array = [];
+    week_array.push(today);
+    for(var i=1; i<7; i++) {
+        const new_day = new Date();
+        new_day.setDate(today.getDate() + i)
+        week_array.push(new_day)
+    }
+    return week_array;
 }

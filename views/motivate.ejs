@@ -1,2 +1,123 @@
 <%- include('partials/topnav_signedin') %>
-Motivate page
+<%- include ('partials/styles/motivateStyles') %>
+
+<% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %>
+<% function timeToText(time) {
+    var timeArr = time.split(':');
+    var hour = timeArr[0];
+    var mins = ':' + timeArr[1].toString();
+    if (mins == ':00') {
+        mins='';
+    }
+    if (hour < 12) {
+        return `${parseInt(hour).toString()}${mins}am`;
+    }
+    else if (hour == 12) {
+        return `12${mins}pm`;
+    }
+    else {
+        normal_hour = parseInt(hour) - 12
+        return `${normal_hour.toString()}${mins}pm`;
+    }
+}; %>
+
+<div class="row" style="height:100%; text-align:center;">
+    <div class="col-md-9">
+        <h5 style="margin:10px;">Find a Study Session to Motivate For</h5>
+        <div class="row" style="height:100%; margin-left:2.5%;">
+            <% daysArray.forEach((day) => { %>
+                <div class="col sessions_col">
+                    <div class="col_header"><%= dayNames[day.getDay()] %> <%= day.getMonth()+1 %>/<%= day.getDate() %></div>
+                    <% sessions.forEach((session) => { %>
+                        <% var session_date_array = session.date.split('/');
+                            var session_month = session_date_array[0];
+                            var session_day = session_date_array[1];
+                            if (session_month == day.getMonth() && session_day == day.getDate()) { %> 
+                                <div id="<%= session._id %>" class="card session_card" onClick="motivateSession(this)">
+                                    <div class="card-body" style="padding:0;">
+                                        <%= timeToText(session.startTime) %> - <%= timeToText(session.endTime) %><br>
+                                        <div style="color:green; font-weight:bold;">$<%=session.cost-1%></div>
+                                    </div>
+                                </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+    <div class="col-md-3" style="border-left: 5px solid #eaeaea;">
+        hello
+    </div>
+    
+</div>
+
+<div class="popUp" id="joinEvent">
+    <h5 id="PUheader">Motivate Event on </h5>
+    <div>
+        <div id="PUtime">Time: </div>
+    </div>
+    <div>
+        <div id="PUearnings" ></div>
+    </div>
+    <div>
+        <button class="btn buttonH" style="background-color: #15335e; color:white;">Motivate</button>
+        <button class="btn float-right buttonH" style="background-color: red; color:white;">Cancel</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var global_clicked_session;
+
+
+    function motivateSession(sessionEL) {
+        var sessions = <%- JSON.stringify(sessions) %>;
+        var clicked_session;
+        console.log(sessionEL.id)
+        for (var session in sessions) {
+            var curr_session = sessions[session];
+            if (curr_session._id == sessionEL.id) {
+                console.log("success");
+                global_clicked_session = curr_session;
+                clicked_session = curr_session;
+                break; //session should now contain the one that was clicked
+            }
+        }
+        var dateArray = clicked_session.date.split('/');
+        console.log(clicked_session);
+        document.getElementById("PUheader").innerHTML += `${parseInt(dateArray[0])+1}/${dateArray[1]}/${dateArray[2]}`
+        document.getElementById("joinEvent").style.display = 'inline-block';
+        document.getElementById("PUtime").innerHTML += `${timeToText(clicked_session.startTime)} - ${timeToText(clicked_session.endTime)}`;
+        
+    }
+
+
+
+    //helper functions------------------------------
+    function timeToText(time) {
+        var timeArr = time.split(':');
+        var hour = timeArr[0];
+        var mins = ':' + timeArr[1].toString();
+        if (mins == ':00') {
+            mins='';
+        }
+        if (hour < 12) {
+            return `${parseInt(hour).toString()}${mins}am`;
+        }
+        else if (hour == 12) {
+            return `12${mins}pm`;
+        }
+        else {
+            normal_hour = parseInt(hour) - 12
+            return `${normal_hour.toString()}${mins}pm`;
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
