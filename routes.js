@@ -119,6 +119,25 @@ router.get('/deleteSession', async function(req, res, next) {
     res.redirect('/routes/study?user=' + req.query.email);     
 });
 
+//make meeting from motivate page
+router.get('/confirmMotivate', async function(req, res, next) {
+        //enter req.body into meetings table
+        console.log("got here");
+        //find studyTime and make "motivator": 1
+        console.log(req.query);
+        const db = req.app.locals.db;
+        await db.collection('meetings').insertOne(req.query, function(err, result) {
+            assert.equal(null, err);
+            console.log('doc inserted');
+        });
+        var newvalues = {$set: {motivator: 1}}
+        await db.collection('studyTimes').updateOne({"_id": ObjectId(req.query.studyTimeID)}, newvalues, function(err, result) {
+            assert.equal(null, err);
+            console.log('motivator set to 1');
+        });
+        res.redirect('/routes/motivate?user=' + req.query.motivatorEmail);   
+    });
+
 
 //sign up logic
 router.route('/signup')

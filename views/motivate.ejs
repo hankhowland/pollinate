@@ -52,44 +52,44 @@
 </div>
 
 <div class="popUp" id="joinEvent">
-    <h5 id="PUheader">Motivate Event on </h5>
+    <h5 id="PUheader"></h5>
+    <div id="PUtime"></div>
+    <div style="margin-bottom:8px;" id="PUearnings"></div>
     <div>
-        <div id="PUtime">Time: </div>
-    </div>
-    <div>
-        <div id="PUearnings" ></div>
-    </div>
-    <div>
-        <button class="btn buttonH" style="background-color: #15335e; color:white;">Motivate</button>
-        <button class="btn float-right buttonH" style="background-color: red; color:white;">Cancel</button>
+        <a class="btn buttonH" href="" id="confirmMotivate" style="background-color: #15335e; color:white;">Motivate</a>
+        <button class="btn float-right buttonH" onClick="closePU()" style="background-color: red; color:white;">Cancel</button>
     </div>
 </div>
 
 <script type="text/javascript">
     var global_clicked_session;
-
-
+    var global_sessionEL;
     function motivateSession(sessionEL) {
         var sessions = <%- JSON.stringify(sessions) %>;
         var clicked_session;
-        console.log(sessionEL.id)
+        global_SessionEL = sessionEL;
         for (var session in sessions) {
             var curr_session = sessions[session];
             if (curr_session._id == sessionEL.id) {
-                console.log("success");
                 global_clicked_session = curr_session;
                 clicked_session = curr_session;
                 break; //session should now contain the one that was clicked
             }
         }
         var dateArray = clicked_session.date.split('/');
-        console.log(clicked_session);
-        document.getElementById("PUheader").innerHTML += `${parseInt(dateArray[0])+1}/${dateArray[1]}/${dateArray[2]}`
+        document.getElementById("PUheader").innerHTML = `Motivate for Study Session on ${parseInt(dateArray[0])+1}/${dateArray[1]}/${dateArray[2]}`
         document.getElementById("joinEvent").style.display = 'inline-block';
-        document.getElementById("PUtime").innerHTML += `${timeToText(clicked_session.startTime)} - ${timeToText(clicked_session.endTime)}`;
-        
+        document.getElementById("PUtime").innerHTML = `Time: ${timeToText(clicked_session.startTime)} - ${timeToText(clicked_session.endTime)}`;
+        document.getElementById("PUearnings").innerHTML = 'Earnings: $' + (clicked_session.cost-1);
+
+        var params = `?studyTimeID=${clicked_session._id}&motivatorEmail=${user}&studierEmail=${clicked_session.email}&cost=${clicked_session.cost}`;
+        const url='/routes/confirmMotivate'+params;
+        document.getElementById("confirmMotivate").href = url;
     }
 
+    function closePU() {
+        document.getElementById("joinEvent").style.display = 'none';
+    }
 
 
     //helper functions------------------------------
