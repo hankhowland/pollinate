@@ -7,7 +7,7 @@ var nodemailer = require('nodemailer');
 //GLOBAL UTILITY VARS
 var today = new Date();
 var mongoToday = today.getFullYear().toString()+zeroFormat(today.getMonth())+zeroFormat(today.getDate());
-var cost_per_hour = 6;
+var cost_per_hour = 4;
 
 //serve sign in page
 router.get('/', async function(req, res, next){
