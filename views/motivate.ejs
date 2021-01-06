@@ -24,7 +24,7 @@
 <div class="row" style="height:100%; text-align:center;">
     <div class="col-md-9">
         <h5 style="margin:10px;">Find a Study Session to Motivate For</h5>
-        <div class="row" style="height:100%; margin-left:2.5%;">
+        <div class="row" style="height:100%; margin-left:2.5%;" >
             <% daysArray.forEach((day) => { %>
                 <div class="col sessions_col">
                     <div class="col_header"><%= dayNames[day.getDay()] %> <%= day.getMonth()+1 %>/<%= day.getDate() %></div>
@@ -45,8 +45,22 @@
             <% }); %>
         </div>
     </div>
-    <div class="col-md-3" style="border-left: 5px solid #eaeaea;">
-        the painting was bad
+
+
+    <div class="col-md-3" style="border-left: 5px solid #eaeaea; text-align:center; padding-right: 25px;">
+        <h4 style="margin-top:10px; margin-bottom:30px;">My Confirmed Meetings</h4>
+        <% myMeetings.forEach((meeting) => { %>
+        <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
+            <div class="card" style="color: black; margin-bottom: 15px;">
+                <div class="card-header">
+                    <b>Meeting on <%= date %></b>
+                </div>
+                <div class="card-body">
+                    <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> </div>
+                    <div><b>Earnings:</b> $<%= meeting.cost-1 %></div>
+                </div>
+            </div>
+        <% }); %>
     </div>
     
 </div>

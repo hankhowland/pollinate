@@ -8,6 +8,24 @@
 function dateToString(date) {
         return date.getMonth()+'/'+date.getDate()+'/'+date.getFullYear()+':';
     }
+function timeToText(time) {
+    var timeArr = time.split(':');
+    var hour = timeArr[0];
+    var mins = ':' + timeArr[1].toString();
+    if (mins == ':00') {
+        mins='';
+    }
+    if (hour < 12) {
+        return `${parseInt(hour).toString()}${mins}am`;
+    }
+    else if (hour == 12) {
+        return `12${mins}pm`;
+    }
+    else {
+        normal_hour = parseInt(hour) - 12
+        return `${normal_hour.toString()}${mins}pm`;
+    }
+}
  %> 
 <% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %>
 <% var times = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"]; %>
@@ -48,8 +66,20 @@ function dateToString(date) {
         </div>
     </div>
 
-    <div class="col-md-3 no-float" style="border-left: 5px solid #eaeaea; color:#15335e; text-align:center;">
-        <h4 style="margin-top:10px;">My Events</h4>
+    <div class="col-md-3 no-float" style="border-left: 5px solid #eaeaea; text-align:center; padding-right: 25px;">
+        <h4 style="margin-top:10px; margin-bottom:30px;">My Confirmed Meetings</h4>
+        <% myMeetings.forEach((meeting) => { %>
+        <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
+            <div class="card" style="color: black; margin-bottom: 15px;">
+                <div class="card-header">
+                    <b>Meeting on <%= date %></b>
+                </div>
+                <div class="card-body">
+                    <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> </div>
+                    <div><b>Cost:</b> $<%= meeting.cost %></div>
+                </div>
+            </div>
+        <% }); %>
     </div>
 </div>
 
