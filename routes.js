@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
+var nodemailer = require('nodemailer');
 
 //GLOBAL UTILITY VARS
 var today = new Date();
@@ -126,7 +127,7 @@ router.get('/motivate', async function(req, res, next){
 
 //add Study Session
 router.route('/addStudyTime')
-    .post(function(req, res, next) {
+    .post(async function(req, res, next) {
         const db = req.app.locals.db;
         var dateArr = req.body.date.split('/');
         var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
@@ -136,10 +137,14 @@ router.route('/addStudyTime')
             startTime: req.body.startTime,
             endTime: req.body.endTime
         };
-        db.collection('studyTimes').insertOne(doc, function(err, result) {
-            assert.equal(null, err);
-            console.log('doc inserted');
-        });
+        var startInt = parseInt(doc.startTime.split(':')[0]) + parseInt(doc.startTime.split(':')[1]);
+        var endInt = parseInt(doc.endTime.split(':')[0]) + parseInt(doc.endTime.split(':')[1]);
+        if (startInt < endInt) {
+            await db.collection('studyTimes').insertOne(doc, function(err, result) {
+                assert.equal(null, err);
+                console.log('doc inserted');
+            });
+        }
         res.redirect('/routes/study?user=' + req.body.email);     
     });
 
@@ -171,9 +176,7 @@ router.get('/deleteSession', async function(req, res, next) {
 //make meeting from motivate page
 router.get('/confirmMotivate', async function(req, res, next) {
         //enter req.body into meetings table
-        console.log("got here");
         //find studyTime and make "motivator": 1
-        console.log(req.query);
         const db = req.app.locals.db;
         await db.collection('meetings').insertOne(req.query, function(err, result) {
             assert.equal(null, err);
@@ -184,6 +187,30 @@ router.get('/confirmMotivate', async function(req, res, next) {
             assert.equal(null, err);
             console.log('motivator set to 1');
         });
+
+        //send email about confirmed meeting
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'hankhowland',
+              pass: 'jojo3302'
+            }
+          });
+          
+          var mailOptions = {
+            from: 'hankhowland@gmail.com',
+            to: 'hankhowland@gmail.com',
+            subject: 'Pollinate Meeting Confirmed!!',
+            text: `A motivator was found for your study session`
+          };
+          
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
         res.redirect('/routes/motivate?user=' + req.query.motivatorEmail);   
     });
 

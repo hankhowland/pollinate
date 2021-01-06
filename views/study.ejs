@@ -68,18 +68,20 @@ function timeToText(time) {
 
     <div class="col-md-3 no-float" style="border-left: 5px solid #eaeaea; text-align:center; padding-right: 25px;">
         <h4 style="margin-top:10px; margin-bottom:30px;">My Confirmed Meetings</h4>
-        <% myMeetings.forEach((meeting) => { %>
-        <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
-            <div class="card" style="color: black; margin-bottom: 15px;">
-                <div class="card-header">
-                    <b>Meeting on <%= date %></b>
+        <div class="overflow-auto" style="height:650px;">
+            <% myMeetings.forEach((meeting) => { %>
+            <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
+                <div class="card" style="color: black; margin-bottom: 15px;">
+                    <div class="card-header">
+                        <b>Meeting on <%= date %></b>
+                    </div>
+                    <div class="card-body">
+                        <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> </div>
+                        <div><b>Cost:</b> $<%= meeting.cost %></div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> </div>
-                    <div><b>Cost:</b> $<%= meeting.cost %></div>
-                </div>
-            </div>
-        <% }); %>
+            <% }); %>
+        </div>
     </div>
 </div>
 
@@ -98,14 +100,18 @@ function timeToText(time) {
         <div class="form-group row">
             <label for="startTime" class="col-5 col-form-label">Start Time</label>
             <div class="col-7">
-                <input class="form-control" name="startTime" type="time" id="startTime">
+                <input class="form-control" onchange="calculateCost()" name="startTime" type="time" id="startTime">
             </div>
         </div>
         <div class="form-group row">
             <label for="endTime" class="col-5 col-form-label">End Time</label>
             <div class="col-7">
-                <input class="form-control" name="endTime" type="time" id="endTime">
+                <input class="form-control" onchange="calculateCost()" name="endTime" type="time" id="endTime">
             </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-5">Cost</div>
+            <div class="col-7" id="cost">$6</div>
         </div>
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="PUdate" name="date">
@@ -138,12 +144,13 @@ function timeToText(time) {
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="edit_date" name="date">
         <input type="hidden" id="edit_id" name="id">
-        <button type="submit" class="btn modalButton" style="background: #15335e; color: white;">Edit</button>
+        <button type="submit" id="editBtn" class="btn modalButton" style="background: #15335e; color: white;">Edit</button>
         <button onClick="closePU('popUpEventEditor')" type="button" class="btn float-right" id="closeEdit">Close</button>
     </form>
 </div>
 
 <script>
+    var cost_per_hour = 6;
     //create session pop up onclick function
     function makeSession(cell) {
         var cellArr = cell.id.split(':');
@@ -180,7 +187,14 @@ function timeToText(time) {
     
     //onclick of editSession popup
     function editSession(sessionEL) {
+        //reseting potential changes from there being a motivator
+        document.getElementById("editBtn").style.visibility = 'visible';
+        document.getElementById("deleteRoute").style.visibility = 'visible';
+        document.getElementById("edit_startTime").readOnly = false;
+        document.getElementById("edit_endTime").readOnly = false;
         document.getElementById("popUpEventEditor").style.display = "block";
+        var motivator = 0;
+        if (sessionEL.style.backgroundColor == 'rgb(120, 171, 70)') {motivator = 1;}
         sessionID = sessionEL.id;
         var session;
         sessions.forEach((sesh) => {
@@ -190,13 +204,32 @@ function timeToText(time) {
         });
         var month = parseInt(session.date.split('/')[0])+1;
         var day = parseInt(session.date.split('/')[1]);
-        document.getElementById("editTitle").innerHTML = 'Edit Study Session on ' + month + '/' + day;
+        var titleStr = 'Edit'; 
+        if (motivator) {
+            titleStr = 'Confirmed';
+            document.getElementById("editBtn").style.visibility = 'hidden';
+            document.getElementById("deleteRoute").style.visibility = 'hidden';
+            document.getElementById("edit_startTime").readOnly = true;
+            document.getElementById("edit_endTime").readOnly = true;
+        }
+        document.getElementById("editTitle").innerHTML = titleStr + ' Study Session on ' + month + '/' + day;
         document.getElementById("edit_startTime").value = session.startTime;
         document.getElementById("edit_endTime").value = session.endTime;
         document.getElementById("edit_date").value = session.date;
         document.getElementById("edit_id").value = session._id;
         document.getElementById("deleteRoute").href = `/routes/deleteSession?id=${session._id}&email=${session.email}`
     };
+
+    //calculate Cost onchange of startTime or endTime
+    function calculateCost() {
+        var startTime = document.getElementById('startTime').value;
+        var endTime = document.getElementById('endTime').value;
+        var cost_info = document.getElementById('cost');
+        var length = (parseInt(endTime.split(':')[0])*60 + parseInt(endTime.split(':')[1])) - (parseInt(startTime.split(':')[0])*60 + parseInt(startTime.split(':')[1])) 
+        cost = Math.ceil((length/60)*cost_per_hour);
+        if (cost < cost_per_hour) {cost = cost_per_hour;}
+        cost_info.innerHTML = '$' + cost;
+    }
 
 
     //makeing calendar session boxes --------------------------------------------------------------
@@ -217,6 +250,7 @@ function timeToText(time) {
         sessionEL.style.top = getTop(session.startTime);
         sessionEL.style.height = getHeight(session.startTime, session.endTime);
         sessionEL.style.left = getLeft(session.date);
+        if (session.motivator == 1) {sessionEL.style.backgroundColor = '#78AB46';}
     });
     
     //session positioning helpers

@@ -49,20 +49,21 @@
 
     <div class="col-md-3" style="border-left: 5px solid #eaeaea; text-align:center; padding-right: 25px;">
         <h4 style="margin-top:10px; margin-bottom:30px;">My Confirmed Meetings</h4>
-        <% myMeetings.forEach((meeting) => { %>
-        <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
-            <div class="card" style="color: black; margin-bottom: 15px;">
-                <div class="card-header">
-                    <b>Meeting on <%= date %></b>
+        <div class="overflow-auto" style="height: 650px;">
+            <% myMeetings.forEach((meeting) => { %>
+            <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
+                <div class="card" style="color: black; margin-bottom: 15px;">
+                    <div class="card-header">
+                        <b>Meeting on <%= date %></b>
+                    </div>
+                    <div class="card-body">
+                        <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> </div>
+                        <div><b>Earnings:</b> $<%= meeting.cost-1 %></div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> </div>
-                    <div><b>Earnings:</b> $<%= meeting.cost-1 %></div>
-                </div>
-            </div>
-        <% }); %>
+            <% }); %>
+        </div>
     </div>
-    
 </div>
 
 <div class="popUp" id="joinEvent">
@@ -79,7 +80,7 @@
     var global_clicked_session;
     var global_sessionEL;
     function motivateSession(sessionEL) {
-        var sessions = <%- JSON.stringify(sessions) %>;
+        var sessions = <%- JSON.stringify(sessions) %>
         var clicked_session;
         global_SessionEL = sessionEL;
         for (var session in sessions) {
