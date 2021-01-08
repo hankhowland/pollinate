@@ -26,11 +26,10 @@ router.get('/study', async function(req, res, next){
         res.redirect('/routes/');
     }
     else {
-        //req.query has user
         var week_array = makeWeekArray();
-        //get users study sessions
         const db = req.app.locals.db;
 
+        //get users study sessions
         var sessionsCursor = db.collection('studyTimes').find(
             {$and: [
                 {"date": {$gte: parseInt(mongoToday)}},
@@ -45,23 +44,22 @@ router.get('/study', async function(req, res, next){
             sessionsArray.push(doc);
         });
 
-        var mySessionsCursor = db.collection('meetings').find({"studierEmail": {$eq: req.query.user}});
+        //get confirmed meetings
         var mySessionsArray = [];
-        await mySessionsCursor.forEach((doc) => {
-            //find corresponding studyTime in sessionsArray
-            for (i in sessionsArray) {
-                var session = sessionsArray[i]
-                if (session._id == doc.studyTimeID) {
-                    doc.startTime = session.startTime;
-                    doc.endTime = session.endTime;
-                    doc.date = session.date;
-                }
-            }
-            if ((doc.date != undefined) && (dateStringToInt(doc.date) >= parseInt(mongoToday))) {
-                mySessionsArray.push(doc)
-            }
-        })
-        //want to pass to client: date:"m/d", "start_time": "00:00", "end_time": "00:00", satisfied?: "True"/"False"
+        mySessionsArray = await db.collection('meetings').find(
+            {$and: [
+                {"date": {$gte: parseInt(mongoToday)}},
+                {"studierEmail": {$eq: req.query.user}},
+            ]}   
+        ).toArray();
+        for (i in mySessionsArray) {
+            var doc = mySessionsArray[i];
+            doc.date = parseInt(doc.date.toString().slice(4,6)) + '/' + parseInt(doc.date.toString().slice(6,8)) + '/' + doc.date.toString().slice(0,4);
+            doc.startTime = doc.startTime.toString().slice(0,5);
+            doc.endTime = doc.endTime.toString().slice(0,5);
+            mySessionsArray[i] = doc;
+        }
+        
         res.render('study', {daysArray: week_array, sessionsArr: sessionsArray, user: req.query.user, myMeetings: mySessionsArray});
     }
 });
@@ -72,7 +70,7 @@ router.get('/motivate', async function(req, res, next){
     //get all sessions where user != current user, date >= today, and motivator != 0
     const db = req.app.locals.db;
 
-    //available sessions
+    //available sessions to motivate for
     var sessionsCursor = db.collection('studyTimes').find(
         {$and: [
             {"date": {$gte: parseInt(mongoToday)}},
@@ -93,35 +91,21 @@ router.get('/motivate', async function(req, res, next){
     });
 
     //my confirmed meetings
-    var mySessionsCursor = db.collection('meetings').find({"motivatorEmail": {$eq: req.query.user}});
     var mySessionsArray = [];
-    var cursor = db.collection('studyTimes').find(
+    mySessionsArray = await db.collection('meetings').find(
         {$and: [
             {"date": {$gte: parseInt(mongoToday)}},
-            {"email": {$ne: req.query.user}},
+            {"motivatorEmail": {$eq: req.query.user}},
         ]}   
-    );
-    var utilArray = [];
-    await cursor.forEach((doc) => {
+    ).toArray();
+    for (i in mySessionsArray) {
+        var doc = mySessionsArray[i];
         doc.date = parseInt(doc.date.toString().slice(4,6)) + '/' + parseInt(doc.date.toString().slice(6,8)) + '/' + doc.date.toString().slice(0,4);
         doc.startTime = doc.startTime.toString().slice(0,5);
         doc.endTime = doc.endTime.toString().slice(0,5);
-        utilArray.push(doc);
-    });
-    await mySessionsCursor.forEach(async function(doc) {
-        for (i in utilArray) {
-            var sesh = utilArray[i];
-            if (sesh._id == doc.studyTimeID) {
-                sesh = utilArray[i];
-                doc.date = sesh.date;
-                doc.startTime = sesh.startTime;
-                doc.endTime = sesh.endTime;
-            }
-        }
-        if (doc.date != undefined) {
-            mySessionsArray.push(doc);
-        }
-    });
+        mySessionsArray[i] = doc;
+    }
+    
     res.render('motivate', {sessions: sessionsArray, daysArray: week_array, myMeetings: mySessionsArray});
 });
 
@@ -178,6 +162,17 @@ router.get('/confirmMotivate', async function(req, res, next) {
         //enter req.body into meetings table
         //find studyTime and make "motivator": 1
         const db = req.app.locals.db;
+        var date = req.query.date;
+        var dateArr = req.query.date.split('/');
+        var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
+        req.query.date = parseInt(dateString);
+
+        var studier = await db.collection('users').find({"email": {$eq: req.query.studierEmail}}).limit(1).toArray();
+        var motivator = await db.collection('users').find({"email": {$eq: req.query.motivatorEmail}}).limit(1).toArray();
+        req.query.studierVenmo = studier[0].venmo;
+        req.query.motivatorVenmo = motivator[0].venmo;
+        
+
         await db.collection('meetings').insertOne(req.query, function(err, result) {
             assert.equal(null, err);
             console.log('doc inserted');
@@ -188,9 +183,10 @@ router.get('/confirmMotivate', async function(req, res, next) {
             console.log('motivator set to 1');
         });
 
-        //send email about confirmed meeting
+        //send email to motivator
         var transporter = nodemailer.createTransport({
             service: 'gmail',
+            //replace with pollinate work email
             auth: {
               user: 'hankhowland',
               pass: 'jojo3302'
@@ -201,7 +197,7 @@ router.get('/confirmMotivate', async function(req, res, next) {
             from: 'hankhowland@gmail.com',
             to: 'hankhowland@gmail.com',
             subject: 'Pollinate Meeting Confirmed!!',
-            text: `A motivator was found for your study session`
+            text: `A motivator was found for your study session!\n\nYou are all set to study from ${timeToText(req.query.startTime)} - ${timeToText(req.query.endTime)} on ${date}. The zoom link for your meeting will be emailed to you soon.\n\nTo see all your confirmed and desired study sessions, go to www.pollinate.work/routes/.`
           };
           
           transporter.sendMail(mailOptions, function(error, info){
@@ -211,8 +207,16 @@ router.get('/confirmMotivate', async function(req, res, next) {
               console.log('Email sent: ' + info.response);
             }
           });
+          //send email to studier
         res.redirect('/routes/motivate?user=' + req.query.motivatorEmail);   
     });
+
+router.get('/utility', async function(req, res, next) {
+    //utility function to do db cleaning
+    const db = req.app.locals.db;
+    //await db.collection('studyTimes').deleteMany({}) 
+    res.redirect('/routes/'); 
+})
 
 
 //sign up logic
@@ -238,7 +242,8 @@ router.route('/signup')
             else { //all good, create account
                 const item = {
                     email: req.body.email,
-                    password: req.body.password
+                    password: req.body.password,
+                    venmo: req.body.venmo
                 }
         
                 db.collection('users').insertOne(item, function(err, result) {
@@ -309,3 +314,23 @@ function dateStringToInt(date) {
     var year = dateArr[2];
     return parseInt(`${year}${month}${day}`);
 }
+
+//turn 00:00 -> x am/pm
+function timeToText(time) {
+    var timeArr = time.split(':');
+    var hour = timeArr[0];
+    var mins = ':' + timeArr[1].toString();
+    if (mins == ':00') {
+        mins='';
+    }
+    if (hour < 12) {
+        return `${parseInt(hour).toString()}${mins}am`;
+    }
+    else if (hour == 12) {
+        return `12${mins}pm`;
+    }
+    else {
+        normal_hour = parseInt(hour) - 12
+        return `${normal_hour.toString()}${mins}pm`;
+    }
+};
