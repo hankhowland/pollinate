@@ -242,8 +242,7 @@ router.route('/signup')
             else { //all good, create account
                 const item = {
                     email: req.body.email,
-                    password: req.body.password,
-                    venmo: req.body.venmo
+                    password: req.body.password
                 }
         
                 db.collection('users').insertOne(item, function(err, result) {
