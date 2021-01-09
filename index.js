@@ -6,6 +6,8 @@ const mongo = require('mongodb');
 const app = express();
 const PORT = process.env.PORT || 5000
 
+app.use(express.static(__dirname + '/public'));
+
 //for post forms
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

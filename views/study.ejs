@@ -29,8 +29,8 @@ function timeToText(time) {
  %> 
 <% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %>
 <% var times = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"]; %>
-<div class="row" style="height:100%;">
-    <div class="col-md-9" style="text-align:center; color:#15335e;">
+<div style="height:100%; display:flex; background-color:#eaeaea;">
+    <div class="shadow-sm" style="text-align:center; background-color:white; margin:10px; border-radius:5px; flex:1">
         <h4 style="margin-top:10px;">Desired Study Sessions</h4>
         <div style="padding:30px;">
             <table id="calendarTable">
@@ -66,16 +66,14 @@ function timeToText(time) {
         </div>
     </div>
 
-    <div class="col-md-3 no-float" style="border-left: 5px solid #eaeaea; text-align:center; padding-right: 25px;">
-        <h4 style="margin-top:10px; margin-bottom:30px;">My Confirmed Meetings</h4>
+    <div style="text-align:center; flex:.25; margin:10px; margin-left: 0px !important;">
+        <h5 class="shadow-sm" style="padding: 5px 2px; background-color:white; border-radius: 3px; margin-bottom:10px;">My Confirmed Meetings</h5>
         <div class="overflow-auto" style="height:650px;">
             <% myMeetings.forEach((meeting) => { %>
             <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
-                <div class="card" style="color: black; margin-bottom: 15px;">
-                    <div class="card-header">
-                        <b>Meeting on <%= date %></b>
-                    </div>
+                <div class="card shadow-sm" style="color: black; margin-bottom:10px; border: none !important; border-radius: 3px !important;">
                     <div class="card-body">
+                        <div><b>Meeting on <%= date %></b></div><hr>
                         <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST </div>
                         <div><b>Cost:</b> $<%= meeting.cost %></div>
                     </div>
