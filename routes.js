@@ -183,31 +183,31 @@ router.get('/confirmMotivate', async function(req, res, next) {
             console.log('motivator set to 1');
         });
 
-        //send email to motivator
-        var transporter = nodemailer.createTransport({
-            service: 'gmail',
-            //replace with pollinate work email
-            auth: {
-              user: 'hankhowland',
-              pass: 'jojo3302'
-            }
-          });
+        //send email to studier
+        // var transporter = nodemailer.createTransport({
+        //     service: 'gmail',
+        //     //replace with pollinate work email
+        //     auth: {
+        //       user: 'jjpollinate',
+        //       pass: 'henrymyers'
+        //     }
+        //   });
           
-          var mailOptions = {
-            from: 'hankhowland@gmail.com',
-            to: 'hankhowland@gmail.com',
-            subject: 'Pollinate Meeting Confirmed!!',
-            text: `A motivator was found for your study session!\n\nYou are all set to study from ${timeToText(req.query.startTime)} - ${timeToText(req.query.endTime)} on ${date}. The zoom link for your meeting will be emailed to you soon.\n\nTo see all your confirmed and desired study sessions, go to www.pollinate.work/routes/.`
-          };
+        //   var mailOptions = {
+        //     from: 'jjpollinate@gmail.com',
+        //     to: req.query.studierEmail,
+        //     subject: 'Pollinate Meeting Confirmed!!',
+        //     text: `A motivator was found for your study session!\n\nYou are all set to study from ${timeToText(req.query.startTime)} - ${timeToText(req.query.endTime)} on ${date}. The zoom link for your meeting will be emailed to you soon.\n\nTo see all your confirmed and desired study sessions, go to www.pollinate.work/routes/.`
+        //   };
           
-          transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('Email sent: ' + info.response);
-            }
-          });
-          //send email to studier
+        //   transporter.sendMail(mailOptions, function(error, info){
+        //     if (error) {
+        //       console.log(error);
+        //     } else {
+        //       console.log('Email sent: ' + info.response);
+        //     }
+        //   });
+        
         res.redirect('/routes/motivate?user=' + req.query.motivatorEmail);   
     });
 
