@@ -23,7 +23,7 @@
 
 <div style="height:100%; text-align:center; display:flex; background-color:#eaeaea;">
     <div class="shadow-sm" style="flex:1; background-color: white; border-radius:5px; margin:10px;">
-        <h5 style="margin:10px;">Find an Available Study Session to Motivate For</h5>
+        <h5 style="margin:10px;">Join an Available Study Session</h5>
         <div class="row" style="height:100%; margin:1.3%;" >
             <% daysArray.forEach((day) => { %>
                 <div class="col sessions_col">
@@ -35,8 +35,7 @@
                             if (session_month == day.getMonth() && session_day == day.getDate()) { %> 
                                 <div id="<%= session._id %>" class="card session_card" onClick="motivateSession(this)">
                                     <div class="card-body" style="padding:0;">
-                                        <%= timeToText(session.startTime) %> - <%= timeToText(session.endTime) %><br>
-                                        <div style="color:green; font-weight:bold;">$<%=session.cost-1%></div>
+                                        <%= timeToText(session.startTime) %> - <%= timeToText(session.endTime) %>
                                     </div>
                                 </div>
                         <% } %>
@@ -57,7 +56,6 @@
                         <div><b>Meeting on <%= date %></b></div>
                         <hr>
                         <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST</div>
-                        <div><b>Earnings:</b> $<%= meeting.cost-1 %></div>
                     </div>
                 </div>
             <% }); %>
@@ -67,8 +65,7 @@
 
 <div class="popUp" id="joinEvent">
     <h5 id="PUheader"></h5>
-    <div id="PUtime"></div>
-    <div style="margin-bottom:8px;" id="PUearnings"></div>
+    <div id="PUtime"></div><br>
     <div>
         <a class="btn buttonH" href="" id="confirmMotivate" style="background-color: #15335e; color:white;">Motivate</a>
         <button class="btn float-right buttonH" onClick="closePU()" style="background-color: red; color:white;">Cancel</button>

@@ -8,7 +8,7 @@ var nodemailer = require('nodemailer');
 var today = new Date();
 var mongoToday = today.getFullYear().toString()+zeroFormat(today.getMonth())+zeroFormat(today.getDate());
 var cost_per_hour = 4;
-
+//every route starts with "domain name/routes..."
 //serve sign in page
 router.get('/', async function(req, res, next){
     res.render('sign_in');
@@ -32,7 +32,7 @@ router.get('/study', async function(req, res, next){
         //get users study sessions
         var sessionsCursor = db.collection('studyTimes').find(
             {$and: [
-                {"date": {$gte: parseInt(mongoToday)}},
+                {"date": {$gte: parseInt(mongoToday)}}, //20210129
                 {"email": {$eq: req.query.user}}
             ]}   
         );

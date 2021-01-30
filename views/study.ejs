@@ -31,14 +31,14 @@ function timeToText(time) {
 <% var times = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"]; %>
 <div style="height:100%; display:flex; background-color:#eaeaea;">
     <div class="shadow-sm" style="text-align:center; background-color:white; margin:10px; border-radius:5px; flex:1">
-        <h4 style="margin-top:10px;">Desired Study Sessions</h4>
+        <h4 style="margin-top:10px;">Plan a Study Session</h4>
         <div style="padding:30px;">
             <table id="calendarTable">
                 <tr>
                     <td style="font-size:10px;color:#a4a4a4; padding-bottom:10px;">*All Times in CST</td>
                     <% daysArray.forEach((day) => { %>
                         <td class="dateLabel"><%= dayNames[day.getDay()] %> <%= day.getMonth()+1 %>/<%= day.getDate() %></td>
-                    <% }); %>
+                    <% }); %> 
                 </tr>
                 <tr>
                     <td id="topOfCalendar" class="timeLabel" style="padding-top:0px;">5 AM</td>
@@ -75,7 +75,6 @@ function timeToText(time) {
                     <div class="card-body">
                         <div><b>Meeting on <%= date %></b></div><hr>
                         <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST </div>
-                        <div><b>Cost:</b> $<%= meeting.cost %></div>
                     </div>
                 </div>
             <% }); %>
@@ -106,10 +105,6 @@ function timeToText(time) {
             <div class="col-7">
                 <input class="form-control" onchange="calculateCost()" name="endTime" type="time" id="endTime">
             </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-5">Cost</div>
-            <div class="col-7" id="cost">$4</div>
         </div>
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="PUdate" name="date">
