@@ -1,5 +1,5 @@
 <%- include('partials/topnav_signedin') %>
-<%- include ('partials/styles/motivateStyles') %>
+<%- include('partials/styles/motivateStyles') %>
 
 <% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %>
 <% function timeToText(time) {
@@ -72,7 +72,8 @@
     </div>
 </div>
 
-<script type="text/javascript">
+
+ <script type="text/javascript">
     var global_clicked_session;
     var global_sessionEL;
     function motivateSession(sessionEL) {
@@ -91,8 +92,7 @@
         document.getElementById("PUheader").innerHTML = `Motivate for Study Session on ${parseInt(dateArray[0])+1}/${dateArray[1]}/${dateArray[2]}`
         document.getElementById("joinEvent").style.display = 'inline-block';
         document.getElementById("PUtime").innerHTML = `Time: ${timeToText(clicked_session.startTime)} - ${timeToText(clicked_session.endTime)}`;
-        document.getElementById("PUearnings").innerHTML = 'Earnings: $' + (clicked_session.cost-1);
-        var params = `?studyTimeID=${clicked_session._id}&motivatorEmail=${user}&studierEmail=${clicked_session.email}&cost=${clicked_session.cost}&date=${clicked_session.date}&startTime=${clicked_session.startTime}&endTime=${clicked_session.endTime}`;
+        var params = `?studyTimeID=${clicked_session._id}&motivatorEmail=${user}&studierEmail=${clicked_session.email}&date=${clicked_session.date}&startTime=${clicked_session.startTime}&endTime=${clicked_session.endTime}`;
         const url='/routes/confirmMotivate'+params;
         document.getElementById("confirmMotivate").href = url;
     }

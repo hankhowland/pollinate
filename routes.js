@@ -161,6 +161,7 @@ router.get('/deleteSession', async function(req, res, next) {
 router.get('/confirmMotivate', async function(req, res, next) {
         //enter req.body into meetings table
         //find studyTime and make "motivator": 1
+        console.log(req.query);
         const db = req.app.locals.db;
         var date = req.query.date;
         var dateArr = req.query.date.split('/');
@@ -169,8 +170,6 @@ router.get('/confirmMotivate', async function(req, res, next) {
 
         var studier = await db.collection('users').find({"email": {$eq: req.query.studierEmail}}).limit(1).toArray();
         var motivator = await db.collection('users').find({"email": {$eq: req.query.motivatorEmail}}).limit(1).toArray();
-        req.query.studierVenmo = studier[0].venmo;
-        req.query.motivatorVenmo = motivator[0].venmo;
         
 
         await db.collection('meetings').insertOne(req.query, function(err, result) {
