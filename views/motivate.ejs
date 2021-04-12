@@ -67,7 +67,7 @@
     <h5 id="PUheader"></h5>
     <div id="PUtime"></div><br>
     <div>
-        <a class="btn buttonH" href="" id="confirmMotivate" style="background-color: #15335e; color:white;">Motivate</a>
+        <a class="btn buttonH" href="" id="confirmMotivate" style="background-color: #15335e; color:white;">Join</a>
         <button class="btn float-right buttonH" onClick="closePU()" style="background-color: red; color:white;">Cancel</button>
     </div>
 </div>
@@ -89,7 +89,7 @@
             }
         }
         var dateArray = clicked_session.date.split('/');
-        document.getElementById("PUheader").innerHTML = `Motivate for Study Session on ${parseInt(dateArray[0])+1}/${dateArray[1]}/${dateArray[2]}`
+        document.getElementById("PUheader").innerHTML = `Join Study Session on ${parseInt(dateArray[0])+1}/${dateArray[1]}/${dateArray[2]}`
         document.getElementById("joinEvent").style.display = 'inline-block';
         document.getElementById("PUtime").innerHTML = `Time: ${timeToText(clicked_session.startTime)} - ${timeToText(clicked_session.endTime)}`;
         var params = `?studyTimeID=${clicked_session._id}&motivatorEmail=${user}&studierEmail=${clicked_session.email}&date=${clicked_session.date}&startTime=${clicked_session.startTime}&endTime=${clicked_session.endTime}`;

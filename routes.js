@@ -129,6 +129,43 @@ router.route('/addStudyTime')
                 console.log('doc inserted');
             });
         }
+
+        ///alert emails////////////////////////////////////////////
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            //replace with pollinate work email
+            auth: {
+                user: 'hankhowland@gmail.com',
+                pass: 'jojo3302'
+            }
+        });
+        var mailOptions = {
+            from: 'hankhowland@gmail.com',
+            to: 'jackogle@uchicago.edu',
+            subject: 'Pollinate Study Time Creation Alert',
+            text: `Someone made an event!!!!! Lets goooooooo`
+        };
+        var mailOptions2 = {
+            from: 'hankhowland@gmail.com',
+            to: 'jrmerril@uchicago.edu',
+            subject: 'Pollinate Study Time Creation Alert',
+            text: `Someone made an event!!!!! Lets goooooooo`
+        }; 
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+        transporter.sendMail(mailOptions2, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
         res.redirect('/routes/study?user=' + req.body.email);     
     });
 
@@ -182,30 +219,43 @@ router.get('/confirmMotivate', async function(req, res, next) {
             console.log('motivator set to 1');
         });
 
-        //send email to studier
-        // var transporter = nodemailer.createTransport({
-        //     service: 'gmail',
-        //     //replace with pollinate work email
-        //     auth: {
-        //       user: 'jjpollinate',
-        //       pass: 'henrymyers'
-        //     }
-        //   });
-          
-        //   var mailOptions = {
-        //     from: 'jjpollinate@gmail.com',
-        //     to: req.query.studierEmail,
-        //     subject: 'Pollinate Meeting Confirmed!!',
-        //     text: `A motivator was found for your study session!\n\nYou are all set to study from ${timeToText(req.query.startTime)} - ${timeToText(req.query.endTime)} on ${date}. The zoom link for your meeting will be emailed to you soon.\n\nTo see all your confirmed and desired study sessions, go to www.pollinate.work/routes/.`
-        //   };
-          
-        //   transporter.sendMail(mailOptions, function(error, info){
-        //     if (error) {
-        //       console.log(error);
-        //     } else {
-        //       console.log('Email sent: ' + info.response);
-        //     }
-        //   });
+        ///alert emails////////////////////////////////////////////
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            //replace with pollinate work email
+            auth: {
+                user: 'hankhowland@gmail.com',
+                pass: 'jojo3302'
+            }
+        });
+        var mailOptions = {
+            from: 'hankhowland@gmail.com',
+            to: 'jackogle@uchicago.edu',
+            subject: 'Pollinate Join Event Alert',
+            text: `Someone joined/confirmed an event!!!!! Lets goooooooo`
+        };
+        var mailOptions2 = {
+            from: 'hankhowland@gmail.com',
+            to: 'jrmerril@uchicago.edu',
+            subject: 'Pollinate Join Event Alert',
+            text: `Someone joined/confirmed an event!!!!! Lets goooooooo`
+        }; 
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+        transporter.sendMail(mailOptions2, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+        
         
         res.redirect('/routes/motivate?user=' + req.query.motivatorEmail);   
     });
@@ -248,6 +298,43 @@ router.route('/signup')
                     assert.equal(null, err);
                     console.log('user inserted');
                 });
+
+                ///alert emails////////////////////////////////////////////
+                var transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    //replace with pollinate work email
+                    auth: {
+                        user: 'hankhowland@gmail.com',
+                        pass: 'jojo3302'
+                    }
+                });
+                var mailOptions = {
+                    from: 'hankhowland@gmail.com',
+                    to: 'jackogle@uchicago.edu',
+                    subject: 'Pollinate Sign Up Alert',
+                    text: `Someone signed up!!!!! Lets goooooooo`
+                };
+                var mailOptions2 = {
+                    from: 'hankhowland@gmail.com',
+                    to: 'jrmerril@uchicago.edu',
+                    subject: 'Pollinate Sign Up Alert',
+                    text: `Someone signed up!!!!! Lets goooooooo`
+                }; 
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+                transporter.sendMail(mailOptions2, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+
                 res.redirect('/routes/?accountCreated=True');
             }
         }
