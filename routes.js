@@ -21,7 +21,7 @@ router.get('/signup_page', async function(req, res, next){
 
 //serve study page
 router.get('/study', async function(req, res, next){
-    if (req.query.user == undefined || req.query.user == '') {
+    if (req.query.user == undefined || req.query.user == '' || req.query.user == 'null') {
         //check that the user is logged in
         res.redirect('/routes/');
     }
@@ -69,6 +69,10 @@ router.get('/motivate', async function(req, res, next){
     var week_array = makeWeekArray();
     //get all sessions where user != current user, date >= today, and motivator != 0
     const db = req.app.locals.db;
+
+    if (req.query.user == 'null') {
+        res.redirect('/routes/'); 
+    }
 
     //available sessions to motivate for
     var sessionsCursor = db.collection('studyTimes').find(
