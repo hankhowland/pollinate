@@ -11,12 +11,12 @@ var cost_per_hour = 4;
 
 //serve sign in page
 router.get('/', async function(req, res, next){
-    res.render('sign_in');
+    res.render('sign_up');
 });
 
 //serve sign up page
-router.get('/signup_page', async function(req, res, next){
-    res.render('sign_up');
+router.get('/signin_page', async function(req, res, next){
+    res.render('sign_in');
 });
 
 //serve study page
