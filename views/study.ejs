@@ -151,10 +151,10 @@ function timeToText(time) {
         var monthStr = parseInt(dateArr[0]) + 1;
         var am_or_pm = cellArr[1].slice(cellArr[1].length-2, cellArr[1].length);
         var hour = cellArr[1].split(' ')[0];
-        if (am_or_pm == "AM") {var endTime = hourFormat(hour) + ":00:00"; var startTime = hourFormat(parseInt(hour)-1) + ":00:00";}
+        if (am_or_pm == "AM") {var endTime = hourFormat(hour-1) + ":30:00"; var startTime = hourFormat(parseInt(hour)-1) + ":00:00";}
         else {
-            if (cellArr[1].slice(0,2) == "12") {var endTime = "12:00:00"; var startTime = "11:00:00";}
-            else {var endTime = (hourFormat(parseInt(hour)+12)) + ":00:00"; var startTime = hourFormat(parseInt(hour)+11) + ":00:00";}
+            if (cellArr[1].slice(0,2) == "12") {var endTime = "11:30:00"; var startTime = "11:00:00";}
+            else {var endTime = (hourFormat(parseInt(hour)+11)) + ":30:00"; var startTime = hourFormat(parseInt(hour)+11) + ":00:00";}
         }
         document.getElementById("startTime").value = startTime;
         document.getElementById("endTime").value = endTime;

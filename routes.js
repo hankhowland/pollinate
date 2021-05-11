@@ -198,6 +198,30 @@ router.get('/deleteSession', async function(req, res, next) {
     res.redirect('/routes/study?user=' + req.query.email);     
 });
 
+function makeConfirmEmailBody(email, date, starttime, endtime) {
+    var str = `Hey ${email}, \n\n
+Congrats on getting one step closer to beating procrastination!
+Here is your meeting link for ${date} at ${starttime} - ${endtime} CST:
+https://uchicago.zoom.us/j/96641521682?pwd=RFJqcmJvL285c3RSd3FHcmhpWnA1dz09\n
+Here are some quick things:
+    1. Begin by expressing one short-term goal and long-term goal. 
+    2. Write them in the chat and say them out loud. 
+    3. Make sure your audio and video are on during the meeting!
+    4. Let us know if you no longer want to attend your meeting; someone else is relying on you    .
+    5. Fill out the survey to help us improve! https://forms.gle/31fLyyuBEy72nZLR7\n\n
+Work is inevitable, procrastination doesn’t have to be.
+www.pollinate.work/routes/\n\n
+If you have any questions shoot us an email, text, or call.\n
+The Pollinate Team
+Jack Ogle: jackogle@uchicago.edu (612) 670-7721
+Jonathan Merril: jrmerril@uchicago.edu (703) 762-6410
+Henry Myers: hankhowland@gmail.com (971) 283-9172
+Joshua Weisskopf: jweisskopf@uchicago.edu (847) 721-2501\n
+P.S. Call us for all your procrastination needs or if you’re lonely!`
+    return str;
+}
+
+
 //make meeting from motivate page
 router.get('/confirmMotivate', async function(req, res, next) {
         //enter req.body into meetings table
@@ -208,10 +232,10 @@ router.get('/confirmMotivate', async function(req, res, next) {
         var dateArr = req.query.date.split('/');
         var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
         req.query.date = parseInt(dateString);
+        
 
         var studier = await db.collection('users').find({"email": {$eq: req.query.studierEmail}}).limit(1).toArray();
         var motivator = await db.collection('users').find({"email": {$eq: req.query.motivatorEmail}}).limit(1).toArray();
-        
 
         await db.collection('meetings').insertOne(req.query, function(err, result) {
             assert.equal(null, err);
@@ -232,6 +256,39 @@ router.get('/confirmMotivate', async function(req, res, next) {
                 pass: 'jojo3302'
             }
         });
+
+        /* emails for studier and motivator================================================= */
+        var bodyTextStudier = makeConfirmEmailBody(req.query.studierEmail, date, timeToText(req.query.startTime), timeToText(req.query.endTime));
+        var bodyTextMotivator = makeConfirmEmailBody(req.query.motivatorEmail, date, timeToText(req.query.startTime), timeToText(req.query.endTime));
+        var mailOptionsS = {
+            from: 'hankhowland@gmail.com',
+            to: req.query.studierEmail,
+            subject: 'Confirmed Meeting on Pollinate',
+            text: bodyTextStudier
+        };
+        var mailOptionsM = {
+            from: 'hankhowland@gmail.com',
+            to: req.query.motivatorEmail,
+            subject: 'Confirmed Meeting on Pollinate',
+            text: bodyTextMotivator
+        };
+        transporter.sendMail(mailOptionsS, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+        transporter.sendMail(mailOptionsM, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+        /* ============================================================================= */
+
+         /* emails for jack and jon jon================================================= */
         var mailOptions = {
             from: 'hankhowland@gmail.com',
             to: 'jackogle@uchicago.edu',
@@ -258,6 +315,7 @@ router.get('/confirmMotivate', async function(req, res, next) {
                 console.log('Email sent: ' + info.response);
             }
         });
+        /* ===================================================================== */
 
         
         
