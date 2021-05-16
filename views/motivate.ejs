@@ -25,21 +25,26 @@
     <div class="shadow-sm" style="flex:1; background-color: white; border-radius:5px; margin:10px;">
         <h5 style="margin:10px;">Join an Available Study Session</h5>
         <div class="row" style="height:100%; margin:1.3%;" >
-            <% daysArray.forEach((day) => { %>
+            <% daysArray.forEach((day) => { var exists = false;%>
                 <div class="col sessions_col">
                     <div class="col_header"><%= dayNames[day.getDay()] %> <%= day.getMonth()+1 %>/<%= day.getDate() %></div>
                     <% sessions.forEach((session) => { %>
                         <% var session_date_array = session.date.split('/');
                             var session_month = session_date_array[0];
                             var session_day = session_date_array[1];
-                            if (session_month == day.getMonth() && session_day == day.getDate()) { %> 
+                            
+                            if (session_month == day.getMonth() && session_day == day.getDate()) { exists = true; %> 
                                 <div id="<%= session._id %>" class="card session_card" onClick="motivateSession(this)">
                                     <div class="card-body" style="padding:0;">
                                         <%= timeToText(session.startTime) %> - <%= timeToText(session.endTime) %>
                                     </div>
                                 </div>
                         <% } %>
+                        
                     <% }); %>
+                    <% if (!exists) { %>
+                        <div class="no-meetings-note">No meetings have been created on this day... yet! <a style="color:blue;" class="make-one-now" href="/routes/study">Make one now</a></div>
+                    <% } %>
                 </div>
             <% }); %>
         </div>
@@ -78,6 +83,7 @@
     var global_sessionEL;
     function motivateSession(sessionEL) {
         var sessions = <%- JSON.stringify(sessions) %>
+        var user = <%- JSON.stringify(user) %>
         var clicked_session;
         global_SessionEL = sessionEL;
         for (var session in sessions) {

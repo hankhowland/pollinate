@@ -1,6 +1,8 @@
 const routes = require('./routes.js');
 const express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 const mongo = require('mongodb');
 
 const app = express();
@@ -13,6 +15,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //for ejs files
 app.set('view engine', 'ejs');
+
+//for sessions stuff
+app.use(cookieParser());
+app.use(session({secret: "Jack Ogle is a peen"}));
 
 //db connection url
 const url = 'mongodb+srv://hankhowland:jojo3302@lists.9qsfv.mongodb.net/<dbname>?retryWrites=true&w=majority'

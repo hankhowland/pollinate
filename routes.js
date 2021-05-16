@@ -3,6 +3,8 @@ const router = express.Router();
 const assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var nodemailer = require('nodemailer');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 
 //GLOBAL UTILITY VARS
 var today = new Date();
@@ -21,11 +23,12 @@ router.get('/signin_page', async function(req, res, next){
 
 //serve study page
 router.get('/study', async function(req, res, next){
-    if (req.query.user == undefined || req.query.user == '' || req.query.user == 'null') {
-        //check that the user is logged in
-        res.redirect('/routes/');
-    }
-    else {
+        if (req.session.user) {
+            user = req.session.user
+        } else {
+            return res.redirect('signin_page');
+        }
+        
         var week_array = makeWeekArray();
         const db = req.app.locals.db;
 
@@ -33,7 +36,7 @@ router.get('/study', async function(req, res, next){
         var sessionsCursor = db.collection('studyTimes').find(
             {$and: [
                 {"date": {$gte: parseInt(mongoToday)}}, //20210129
-                {"email": {$eq: req.query.user}}
+                {"email": {$eq: user}}
             ]}   
         );
         var sessionsArray = [];
@@ -49,7 +52,7 @@ router.get('/study', async function(req, res, next){
         mySessionsArray = await db.collection('meetings').find(
             {$and: [
                 {"date": {$gte: parseInt(mongoToday)}},
-                {"studierEmail": {$eq: req.query.user}},
+                {"studierEmail": {$eq: user}},
             ]}   
         ).toArray();
         for (i in mySessionsArray) {
@@ -60,25 +63,26 @@ router.get('/study', async function(req, res, next){
             mySessionsArray[i] = doc;
         }
         
-        res.render('study', {daysArray: week_array, sessionsArr: sessionsArray, user: req.query.user, myMeetings: mySessionsArray});
-    }
+        res.render('study', {daysArray: week_array, sessionsArr: sessionsArray, user: user, myMeetings: mySessionsArray});
 });
 
 //serve motivate page
 router.get('/motivate', async function(req, res, next){
+    if (req.session.user) {
+        user = req.session.user
+    } else {
+        return res.redirect('signin_page');
+    }
+
     var week_array = makeWeekArray();
     //get all sessions where user != current user, date >= today, and motivator != 0
     const db = req.app.locals.db;
-
-    if (req.query.user == 'null') {
-        res.redirect('/routes/'); 
-    }
 
     //available sessions to motivate for
     var sessionsCursor = db.collection('studyTimes').find(
         {$and: [
             {"date": {$gte: parseInt(mongoToday)}},
-            {"email": {$ne: req.query.user}},
+            {"email": {$ne: user}},
             {"motivator": {$ne: 1}}
         ]}   
     );
@@ -99,7 +103,7 @@ router.get('/motivate', async function(req, res, next){
     mySessionsArray = await db.collection('meetings').find(
         {$and: [
             {"date": {$gte: parseInt(mongoToday)}},
-            {"motivatorEmail": {$eq: req.query.user}},
+            {"motivatorEmail": {$eq: user}},
         ]}   
     ).toArray();
     for (i in mySessionsArray) {
@@ -110,7 +114,7 @@ router.get('/motivate', async function(req, res, next){
         mySessionsArray[i] = doc;
     }
     
-    res.render('motivate', {sessions: sessionsArray, daysArray: week_array, myMeetings: mySessionsArray});
+    res.render('motivate', {sessions: sessionsArray, daysArray: week_array, user: user, myMeetings: mySessionsArray});
 });
 
 //add Study Session
@@ -170,7 +174,7 @@ router.route('/addStudyTime')
             }
         });
 
-        res.redirect('/routes/study?user=' + req.body.email);     
+        res.redirect('/routes/study');     
     });
 
 //edit Study Session
@@ -184,7 +188,7 @@ router.route('/editStudyTime')
             assert.equal(null, err);
             console.log('doc edited');
         });
-        res.redirect('/routes/study?user=' + req.body.email);     
+        res.redirect('/routes/study');     
     });
 
 //delete Study Session
@@ -195,7 +199,7 @@ router.get('/deleteSession', async function(req, res, next) {
         assert.equal(null, err);
         console.log('doc deleted');
     });
-    res.redirect('/routes/study?user=' + req.query.email);     
+    res.redirect('/routes/study');     
 });
 
 function makeConfirmEmailBody(email, date, starttime, endtime) {
@@ -319,7 +323,7 @@ router.get('/confirmMotivate', async function(req, res, next) {
 
         
         
-        res.redirect('/routes/motivate?user=' + req.query.motivatorEmail);   
+        res.redirect('/routes/motivate');   
     });
 
 router.get('/utility', async function(req, res, next) {
@@ -335,10 +339,10 @@ router.route('/signup')
     .post(async function(req, res, next) {
         const db = req.app.locals.db;
         if (req.body.password.length < 8) { //password less than 8 chars
-            res.redirect('/routes/signup_page?passwordShort=True');
+            res.redirect('/routes/?passwordShort=True');
         }
         else if (req.body.password != req.body.confirmPassword) { //passwords don't match
-            res.redirect('/routes/signup_page?passwordsMatch=False');
+            res.redirect('/routes/?passwordsMatch=False');
         }
         else {
             var exists = 0;
@@ -348,7 +352,7 @@ router.route('/signup')
             });
             if (exists > 0) {
                 //this email already has an account
-                res.redirect('/routes/signup_page?userExists=True'); 
+                res.redirect('/routes/?userExists=True'); 
             }
             else { //all good, create account
                 const item = {
@@ -396,8 +400,8 @@ router.route('/signup')
                         console.log('Email sent: ' + info.response);
                     }
                 });
-
-                res.redirect('/routes/?accountCreated=True');
+                req.session.user = req.body.email;
+                res.redirect('/routes/motivate');
             }
         }
 });
@@ -415,14 +419,16 @@ router.route('/sign_in')
         });
         if (exists <= 0) {
             //no account exists with this email
-            res.redirect('/routes/?accountExists=False'); 
+            res.redirect('/routes/signin_page?accountExists=False'); 
         }
         else { //all good, create account
             if (req.body.password == dbPassword) {
-                res.redirect('/routes/study?user=' + req.body.email);
+                req.session.user = req.body.email;
+                console.log(req.session);
+                res.redirect('/routes/motivate');
             }
             else {
-                res.redirect('/routes/?passwordIncorrect=True'); 
+                res.redirect('/routes/signin_page?passwordIncorrect=True'); 
             }
         }
 });
@@ -430,6 +436,16 @@ router.route('/sign_in')
 //serve about page
 router.get("/about", function(req, res, next) {
     res.render("about");
+})
+
+router.get("/myprofile", function(req, res, next) {
+    console.log(req.session);
+    res.render("myProfile", {user: req.session.user});
+})
+
+router.get("/signout", function(req, res, next) {
+    req.session.user = undefined;
+    res.render("sign_in");
 })
 
 module.exports = router;

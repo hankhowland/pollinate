@@ -21,9 +21,10 @@
 
 <div id="topnav" class="row">
     <div class="col-2"><h3><i id="logo" class="fab fa-forumbee"></i>Pollinate</h3></div>
-    <div class="col-2"><a id="studyLink" href="/routes/study?user="><h5 id="studyLink" style="margin-top:8px;">Plan Meeting</h5></a></div>
-    <div class="col-2"><a id="motivateLink" href="/routes/motivate?user="><h5 id="motivateLink" style="margin-top:8px;">Select Meeting</h5></a></div>
-    <div class="col-2"><a id="aboutLink" href="/routes/about?user="><h5 id="aboutLink" style="margin-top:8px;">About</h5></a></div>
+    <div class="col-2"><a id="studyLink" href="/routes/study"><h5 id="studyLink" style="margin-top:8px;">Plan Meeting</h5></a></div>
+    <div class="col-2"><a id="motivateLink" href="/routes/motivate"><h5 id="motivateLink" style="margin-top:8px;">Select Meeting</h5></a></div>
+    <div class="col-2"><a id="aboutLink" href="/routes/about"><h5 id="aboutLink" style="margin-top:8px;">About</h5></a></div>
+    <div class="col-2"><a id="myPLink" href="/routes/myProfile"><h5 id="myPLink" style="margin-top:8px;">My Profile</h5></a></div>
 </div>
 
 <script>
@@ -36,10 +37,7 @@
     else if (window.location.href.indexOf("about") > -1) {
         document.querySelector("#aboutLink").style.color = '#8aafeb';
     }
-    const urlParams = new URLSearchParams(window.location.search);
-    const user = urlParams.get('user');
-    document.getElementById("studyLink").href += user;
-    document.getElementById("motivateLink").href += user;
-    document.getElementById("aboutLink").href += user
-
+    else if (window.location.href.indexOf("myProfile") > -1) {
+        document.querySelector("#myPLink").style.color = '#8aafeb';
+    }
 </script>

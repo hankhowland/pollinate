@@ -1,0 +1,23 @@
+<%- include('partials/topnav_signedin') %>
+<div class="user-info-container">
+    You are signed in as <%= user %>. <a id="sign-out" href="/routes/signout">Sign out</a>
+</div>
+
+<style>
+.user-info-container {
+    margin:auto;
+    width:50%;
+    margin-top:30px;
+    text-align:center;
+    padding:40px;
+    background-color:aliceblue;
+    box-shadow: 3px 3px 3px -2px rgba(0,0,0,0.79);
+}
+#sign-out {
+    color:blue;
+}
+#sign-out:hover {
+    text-decoration:underline;
+}
+
+</style>
