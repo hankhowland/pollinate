@@ -13,11 +13,17 @@ var cost_per_hour = 4;
 //every route starts with "domain name/routes..."
 //serve sign in page
 router.get('/', async function(req, res, next){
+    if (req.session.user) {
+        return res.redirect('motivate');
+    }
     res.render('sign_up');
 });
 
 //serve sign up page
 router.get('/signin_page', async function(req, res, next){
+    if (req.session.user) {
+        return res.redirect('motivate');
+    }
     res.render('sign_in');
 });
 

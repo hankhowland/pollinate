@@ -35,3 +35,8 @@ mongo.connect(url, { promiseLibrary: Promise }, (err, client) => {
 
 //contains all the actual routes, which should be /route + their actual path
 app.use('/routes', routes);
+
+app.get('/', async function(req, res, next){
+  console.log('got to index route');
+  res.redirect('routes/');
+});
