@@ -66,7 +66,7 @@ function work() {
         }
 
         db = client.db('pollinate');
-        min_hour = today.getHours(); //current time
+        min_hour = today.getHours() + 1; //current time + 1 hours
         max_hour = today.getHours() + 2; //current time + 2 hours
 
         var mySessionsArray = [];
