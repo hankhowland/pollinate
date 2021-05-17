@@ -68,7 +68,8 @@ function work() {
         }
 
         db = client.db('pollinate');
-        min_hour = today.getHours() + 1; //current time + 1 hours
+        var min_hour = today.getHours(); //current time + 1 hours
+        var max_hour = today.getHours() + 2;
 
         var mySessionsArray = [];
         mySessionsArray = await db.collection('meetings').find(
@@ -95,12 +96,12 @@ function work() {
                 console.log("haven't reminded yet");
             }
 
-            if (startHour == min_hour && !reminded) {
-                console.log('sending reminder emails for session');
+            if (startHour >= min_hour && startHour <= max_hour && !reminded) {
+                console.log(`sending reminder emails to ${session.motivatorEmail} and ${session.studierEmail}`);
                 send_reminder_email(session, session.motivatorEmail);
                 send_reminder_email(session, session.studierEmail);
                 var newvalues = {$set: {reminded: 1}};
-                await db.collection('meetings').updateOne({"_id": ObjectId(session.id)}, newvalues, function(err, result) {
+                await db.collection('meetings').updateOne({"_id": ObjectId(session._id)}, newvalues, function(err, result) {
                     assert.equal(null, err);
                     console.log('reminded set to 1');
                 });

@@ -238,8 +238,8 @@ router.get('/confirmMotivate', async function(req, res, next) {
         //find studyTime and make "motivator": 1
         console.log(req.query);
         const db = req.app.locals.db;
-        var date = req.query.date;
         var dateArr = req.query.date.split('/');
+        var date = `${dateArr[0]+1}/${dateArr[1]}/${dateArr[2]}`
         var dateString = dateArr[2] + zeroFormat(dateArr[0]) + zeroFormat(dateArr[1]);
         req.query.date = parseInt(dateString);
         
