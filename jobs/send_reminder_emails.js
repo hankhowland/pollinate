@@ -1,5 +1,7 @@
 const mongo = require('mongodb');
 var nodemailer = require('nodemailer');
+var ObjectId = require('mongodb').ObjectID;
+const assert = require('assert');
 
 function zeroFormat(hour) {
     hour = hour.toString();
@@ -67,7 +69,6 @@ function work() {
 
         db = client.db('pollinate');
         min_hour = today.getHours() + 1; //current time + 1 hours
-        max_hour = today.getHours() + 2; //current time + 2 hours
 
         var mySessionsArray = [];
         mySessionsArray = await db.collection('meetings').find(
@@ -78,13 +79,31 @@ function work() {
 
         console.log("today's sessions:");
         console.log(mySessionsArray);
-
-        mySessionsArray.forEach((session) => {
+        
+        console.log(`searching for sessions where start time = ${min_hour}`)
+        mySessionsArray.forEach(async (session) => {
             startHour = session.startTime.split(':')[0];
-            if (startHour <= max_hour && startHour >= min_hour) {
+            //figure out if reminded
+            var reminded = 0;
+            if ('reminded' in session) {
+                console.log ('already reminded');
+                if (session.reminded = 1) {
+                    reminded = 1;
+                }
+            }
+            else {
+                console.log("haven't reminded yet");
+            }
+
+            if (startHour == min_hour && !reminded) {
                 console.log('sending reminder emails for session');
                 send_reminder_email(session, session.motivatorEmail);
                 send_reminder_email(session, session.studierEmail);
+                var newvalues = {$set: {reminded: 1}};
+                await db.collection('meetings').updateOne({"_id": ObjectId(session.id)}, newvalues, function(err, result) {
+                    assert.equal(null, err);
+                    console.log('reminded set to 1');
+                });
             }
         });
         return;
