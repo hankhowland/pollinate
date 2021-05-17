@@ -361,8 +361,12 @@ router.route('/signup')
                 res.redirect('/routes/?userExists=True'); 
             }
             else { //all good, create account
+                console.log(req.body);
                 const item = {
+                    FirstName: req.body.FirstName,
+                    LastName: req.body.LastName,
                     email: req.body.email,
+                    PhoneNumber: req.body.PhoneNumber,
                     password: req.body.password
                 }
         
