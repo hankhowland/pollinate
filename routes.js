@@ -58,9 +58,10 @@ router.get('/study', async function(req, res, next){
         mySessionsArray = await db.collection('meetings').find(
             {$and: [
                 {"date": {$gte: parseInt(mongoToday)}},
-                {"studierEmail": {$eq: user}},
+                {$or: [{"studierEmail": {$eq: user}}, {"motivatorEmail": {$eq: user}}]}
             ]}   
         ).toArray();
+
         for (i in mySessionsArray) {
             var doc = mySessionsArray[i];
             doc.date = parseInt(doc.date.toString().slice(4,6)) + '/' + parseInt(doc.date.toString().slice(6,8)) + '/' + doc.date.toString().slice(0,4);
@@ -109,7 +110,7 @@ router.get('/motivate', async function(req, res, next){
     mySessionsArray = await db.collection('meetings').find(
         {$and: [
             {"date": {$gte: parseInt(mongoToday)}},
-            {"motivatorEmail": {$eq: user}},
+            {$or: [{"studierEmail": {$eq: user}}, {"motivatorEmail": {$eq: user}}]}
         ]}   
     ).toArray();
     for (i in mySessionsArray) {

@@ -35,7 +35,7 @@
                             
                             if (session_month == day.getMonth() && session_day == day.getDate()) { exists = true; %> 
                                 <div id="<%= session._id %>" class="card session_card" onClick="motivateSession(this)">
-                                    <div class="card-body" style="padding:0;">
+                                    <div class="card-body" style="padding:10px 2px;">
                                         <%= timeToText(session.startTime) %> - <%= timeToText(session.endTime) %>
                                     </div>
                                 </div>
@@ -43,7 +43,9 @@
                         
                     <% }); %>
                     <% if (!exists) { %>
-                        <div class="no-meetings-note">No meetings have been created on this day... yet! <a style="color:blue;" class="make-one-now" href="/routes/study">Make one now</a></div>
+                        <div class="no-meetings-note">No meetings have been created on this day... yet! 
+                            <div style="margin-top:10px;"><a style="color:blue;" class="make-one-now" href="/routes/study">Make one now</a></div>
+                        </div>
                     <% } %>
                 </div>
             <% }); %>
@@ -60,7 +62,8 @@
                     <div class="card-body">
                         <div><b>Meeting on <%= date %></b></div>
                         <hr>
-                        <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST</div>
+                        <div style="margin-bottom: 10px;"><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST</div>
+                        <p><a class= "card" style="color: blue; border: 1px solid black" href="https://uchicago.zoom.us/j/96641521682?pwd=RFJqcmJvL285c3RSd3FHcmhpWnA1dz09" target= "_blank">Zoom Link</a></p>
                     </div>
                 </div>
             <% }); %>
@@ -72,8 +75,8 @@
     <h5 id="PUheader"></h5>
     <div id="PUtime"></div><br>
     <div>
-        <a class="btn buttonH" href="" id="confirmMotivate" style="background-color: #15335e; color:white;">Join</a>
-        <button class="btn float-right buttonH" onClick="closePU()" style="background-color: red; color:white;">Cancel</button>
+        <a class="btn float-right buttonH" href="" id="confirmMotivate" style="background-color: #15335e; color:white;">Join</a>
+        <button class="btn float-left buttonH" onClick="closePU()" style="background-color: red; color:white;">Cancel</button>
     </div>
 </div>
 

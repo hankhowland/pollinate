@@ -5,10 +5,11 @@
     6am - 2am for each day, drag and drop events to add them
 -->
 <% 
-function dateToString(date) {
+function dateToString(date) { // Input (date) -> Output (string)
+                              // Takes in a date and returns a string to denote 
         return date.getMonth()+'/'+date.getDate()+'/'+date.getFullYear()+':';
     }
-function timeToText(time) {
+function timeToText(time) { // takes in a time in military time and returns it in standard time notation
     var timeArr = time.split(':');
     var hour = timeArr[0];
     var mins = ':' + timeArr[1].toString();
@@ -25,9 +26,9 @@ function timeToText(time) {
         normal_hour = parseInt(hour) - 12
         return `${normal_hour.toString()}${mins}pm`;
     }
-}
+} // This next block of ejs is the main plan a study time calendar 
  %> 
-<% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %>
+<% var dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] %> 
 <% var times = ["6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM"]; %>
 <div style="height:100%; display:flex; background-color:#eaeaea;">
     <div class="shadow-sm" style="text-align:center; background-color:white; margin:10px; border-radius:5px; flex:1">
@@ -63,27 +64,27 @@ function timeToText(time) {
                     </tr>
                 <% }); %>
             </table>
+        </div>
+    </div>
+    <div style="text-align:center; flex:.25; margin: 10px; margin-left: 0px !important;">
+        <h5 class="shadow-sm" style="background-color: white; border-radius: 3px; padding: 5px 2px;">My Confirmed Meetings</h5>
+        <div class="overflow-auto" style="height: 650px;">
+            <% myMeetings.forEach((meeting) => { %>
+            <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
+                <div class="card shadow-sm" style="color: black; margin-bottom: 10px;"> 
+                    <div class="card-body">
+                        <div><b>Meeting on <%= date %></b></div>
+                        <hr>
+                        <div style="margin-bottom: 10px;"><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST</div>
+                        <p><a class= "card" style="color: blue; border: 1px solid black" href="https://uchicago.zoom.us/j/96641521682?pwd=RFJqcmJvL285c3RSd3FHcmhpWnA1dz09" target= "_blank">Zoom Link</a></p>
+                    </div>
+                </div>
+            <% }); %>
             <div class="how-to-container">
                 <span class="how-to-label">How-to:</span> Use this page to propose study meetings to your fellow pollinators. After you successfully "plan" a meeting, 
                            the other pollinators will be able to view it and join it from the "Select Meeting" page.
             </div>
         </div>
-    </div>
-
-    <div style="text-align:center; flex:.25; margin:10px; margin-left: 0px !important;">
-        <div style="padding:20px; font-weight:bold;">More Exciting Features Coming Soon!</div>
-        <!-- <h5 class="shadow-sm" style="padding: 5px 2px; background-color:white; border-radius: 3px; margin-bottom:10px;">My Confirmed Meetings</h5>
-        <div class="overflow-auto" style="height:650px;">
-            <% myMeetings.forEach((meeting) => { %>
-            <% var dateArr = meeting.date.split('/'); var date = `${(parseInt(dateArr[0])+1)}/${dateArr[1]}/${dateArr[2]}` %>
-                <div class="card shadow-sm" style="color: black; margin-bottom:10px; border: none !important; border-radius: 3px !important;">
-                    <div class="card-body">
-                        <div><b>Meeting on <%= date %></b></div><hr>
-                        <div><b>Time:</b> <%= timeToText(meeting.startTime) %> - <%= timeToText(meeting.endTime) %> CST </div>
-                    </div>
-                </div>
-            <% }); %>
-        </div> -->
     </div>
 </div>
 
@@ -113,8 +114,8 @@ function timeToText(time) {
         </div>
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="PUdate" name="date">
-        <button type="submit" class="btn modalButton" style="background: #15335e; color: white;">Submit</button>
-        <button onclick="closePU('popUpEventCreator')" type="button" class="btn float-right modalButton" style="background: red; color: white;">Cancel</button>
+        <button type="submit" class="btn float-right modalButton" style="background: #15335e; color: white;">Submit</button>
+        <button onclick="closePU('popUpEventCreator')" type="button" class="btn float-left modalButton" style="background: red; color: white;">Cancel</button>
     </form>
 </div>
 
@@ -230,7 +231,7 @@ function timeToText(time) {
     }
 
 
-    //makeing calendar session boxes --------------------------------------------------------------
+    //making calendar session boxes --------------------------------------------------------------
     //calendar constants
     var positioning = document.getElementById('topOfCalendar').getBoundingClientRect();
     var topCal = positioning.bottom;
