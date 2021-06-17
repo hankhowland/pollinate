@@ -357,7 +357,8 @@ router.route('/signup')
                     LastName: req.body.LastName,
                     email: req.body.email,
                     PhoneNumber: req.body.PhoneNumber,
-                    password: req.body.password
+                    password: req.body.password,
+                    Organization: req.body.Organization
                 }
         
                 db.collection('users').insertOne(item, function(err, result) {
