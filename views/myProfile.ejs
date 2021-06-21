@@ -1,13 +1,103 @@
 <%- include('partials/topnav_signedin') %>
+<div class="profile-pic-div">
+    <img src="/BlankProfilePhoto.jpeg" id="photo">
+    <input type="file" id="file">
+    <label for="file" id="uploadBtn">Choose Photo</label>
+</div>
+
+<script>
+//declearing Profile pic selector bar
+const imgDiv = document.querySelector('.profile-pic-Div');
+const img = document.querySelector('#photo');
+const file = document.querySelector('#file');
+const uploadBtn = document.querySelector('#uploadBtn');
+
+//if user hovers on profile div
+imgDiv.addEventListener('mouseenter', function(){
+    uploadBtn.style.display = "block"
+});
+
+//if user hovers out from profile div
+imgDiv.addEventListener('mouseleave', function(){
+    uploadBtn.style.display = "none"
+});
+
+//showing uploaded profile pic
+file.addEventListener('change', function(){
+    //this refers to file
+    const chosenFile = this.files[0];
+
+    if (chosenFile) {
+        const filereader = new FileReader();
+        filereader.addEventListener('load', function(){
+            img.setAttribute('src', filereader.result);
+        });
+        filereader.readAsDataURL(chosenFile);
+    }
+});
+</script>
+
+
+<style>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    height: 100vh;
+    width: 100%;
+}
+.profile-pic-div{
+    height: 200px;
+    width: 200px;
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid grey;
+
+}
+#photo{
+    height: 100%;
+    width: 100%;
+}
+#file{
+display: none;
+}
+#uploadBtn{
+    height: 40px;
+    width: 100%;
+    position: absolute;
+    bottom: -10;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background: rgba(0,0,0,0.79);
+    color: white;
+    line-height: 30px;
+    font-family: sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    display: none;
+}
+
+</style>
+
+
+
 <div class="user-info-container">
     You are signed in as <%= user %>. <a id="sign-out" href="/routes/signout">Sign out</a>
 </div>
+    
 
 <style>
 .user-info-container {
     margin:auto;
     width:50%;
-    margin-top:30px;
+    margin-top:270px;
     text-align:center;
     padding:40px;
     background-color:aliceblue;
