@@ -135,7 +135,8 @@ router.route('/addStudyTime')
             email: req.body.email,
             date: parseInt(dateString),
             startTime: req.body.startTime,
-            endTime: req.body.endTime
+            endTime: req.body.endTime,
+            meetingType: req.body.meetingType
         };
         var startInt = parseInt(doc.startTime.split(':')[0]) + parseInt(doc.startTime.split(':')[1]);
         var endInt = parseInt(doc.endTime.split(':')[0]) + parseInt(doc.endTime.split(':')[1]);

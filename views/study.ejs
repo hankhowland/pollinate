@@ -112,6 +112,15 @@ function timeToText(time) { // takes in a time in military time and returns it i
                 <input class="form-control" onchange="calculateCost()" name="endTime" type="time" id="endTime">
             </div>
         </div>
+        <div class="form-group row">
+            <label for="meetingType" class="col-5 col-form-label">Meeting Type</label>
+            <div class="col-7">
+                <select id="meetingType" name="meetingType">
+                    <option value="studyZoom" style = "color: grey">Study (Zoom)</option>
+                    <option value="lifeOrg">Life Organization</option>
+                  </select>
+            </div>
+         </div>
         <input type="hidden" name="email" value="<%= user %>">
         <input type="hidden" id="PUdate" name="date">
         <button type="submit" class="btn float-right modalButton" style="background: #15335e; color: white;">Submit</button>
