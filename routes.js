@@ -5,6 +5,7 @@ var ObjectId = require('mongodb').ObjectID;
 var nodemailer = require('nodemailer');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+const { ReadPreference } = require('mongodb');
 
 //GLOBAL UTILITY VARS
 var today = new Date();
@@ -514,3 +515,20 @@ function timeToText(time) {
         return `${normal_hour.toString()}${mins}pm`;
     }
 };
+
+//save profile pic to account
+router.route('/profilepic')
+.get(async function(req, res, next) {
+    const db = req.app.locals.db;
+
+    console.log(req.body);
+                const item = {
+                    ProfilePhoto: req.body.ProfilePhoto,
+                }
+        
+                db.collection('users').save(item, function(err, result) {
+                    assert.equal(null, err);
+                    console.log('user inserted');
+                });
+
+});
